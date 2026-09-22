@@ -171,10 +171,10 @@ namespace RacingSim.Physics
                     isFront, isLeft);
 
                 wheelLoad += config.UnsprungMass * 9.81f;
-                wheelStates[i].verticalLoad = math.max(wheelLoad, 0f);
+                wheelStates[i].VerticalLoad = math.max(wheelLoad, 0f);
 
-                wheelStates[i].isGrounded = groundHit.DidHit;
-                wheelStates[i].groundHeight = groundHit.DidHit ? groundHit.Distance : maxDistance;
+                wheelStates[i].IsGrounded = groundHit.DidHit;
+                wheelStates[i].GroundHeight = groundHit.DidHit ? groundHit.Distance : maxDistance;
 
                 ApplyForcesToRigidbody(i, wheelStates[i]);
             }
@@ -251,12 +251,12 @@ namespace RacingSim.Physics
 
         private float CalculateLateralForceForWheel(int wheelIndex)
         {
-            return wheelStates[wheelIndex].lateralForce;
+            return wheelStates[wheelIndex].LateralForce;
         }
 
         private float CalculateLongitudinalForceForWheel(int wheelIndex)
         {
-            return wheelStates[wheelIndex].longitudinalForce;
+            return wheelStates[wheelIndex].LongitudinalForce;
         }
 
         private float GetSteerInput()
@@ -276,10 +276,10 @@ namespace RacingSim.Physics
 
         private void ApplyForcesToRigidbody(int wheelIndex, SuspensionState state)
         {
-            if (vehicleRigidbody == null || !state.isGrounded) return;
+            if (vehicleRigidbody == null || !state.IsGrounded) return;
 
             Vector3 forceDir = (Vector3)state.WheelNormal;
-            float forceMag = state.TotalForce + state.verticalLoad;
+            float forceMag = state.TotalForce + state.VerticalLoad;
 
             Vector3 forcePos = transform.TransformPoint((Vector3)state.ContactPatchPos);
 

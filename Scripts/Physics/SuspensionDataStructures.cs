@@ -205,6 +205,12 @@ namespace RacingSim.Physics
         public bool IsBroken;
         public float DamageLevel;
 
+        [Header("Contact")]
+        public float VerticalLoad;
+        public float GroundHeight;
+        public float LateralForce;
+        public float LongitudinalForce;
+
         [Header("Anti-Dive/Squat")]
         public float AntiDive;
         public float AntiSquat;
