@@ -13,6 +13,24 @@ namespace RacingSim.Vehicle
         [Tooltip("Total massa kendaraan termasuk driver (kg)")]
         public float totalMass = 750f;
         
+        [Tooltip("Moment of inertia around X axis (roll) (kg·m²)")]
+        public float momentOfInertiaX = 900f;
+        
+        [Tooltip("Moment of inertia around Y axis (pitch) (kg·m²)")]
+        public float momentOfInertiaY = 1100f;
+        
+        [Tooltip("Moment of inertia around Z axis (yaw) (kg·m²)")]
+        public float momentOfInertiaZ = 1400f;
+        
+        [Tooltip("Rolling resistance coefficient")]
+        public float rollingResistanceCoefficient = 0.015f;
+        
+        [Tooltip("Angular damping coefficient")]
+        public float angularDampingCoefficient = 0.02f;
+        
+        [Tooltip("Wheel radius (m)")]
+        public float wheelRadius = 0.33f;
+        
         [Tooltip("Jarak wheelbase (m)")]
         public float wheelbase = 2.65f;
         
@@ -34,6 +52,19 @@ namespace RacingSim.Vehicle
         [Header("Engine Parameters")]
         [Tooltip("RPM idle")]
         public float engineIdleRPM = 900f;
+        
+        [Tooltip("Engine torque curve: RPM vs Torque (Nm). Array of (RPM, Torque) pairs.")]
+        public AnimationCurve engineTorqueCurve = new AnimationCurve(
+            new Keyframe(0f, 0f),
+            new Keyframe(3000f, 280f),
+            new Keyframe(6000f, 350f),
+            new Keyframe(9000f, 380f),
+            new Keyframe(11500f, 360f),
+            new Keyframe(13500f, 280f)
+        );
+        
+        [Tooltip("Tire coefficients for Pacejka Magic Formula")]
+        public TireCoefficientsData tireCoefficients = new TireCoefficientsData();
         
         [Tooltip("RPM redline")]
         public float engineRedlineRPM = 13500f;
@@ -233,8 +264,14 @@ namespace RacingSim.Vehicle
         public float aeroDRSClRearMultiplier = 0.60f;
         
         [Header("Electronics Parameters")]
+        [Tooltip("Enable Traction Control")]
+        public bool tcEnabled = true;
+        
         [Tooltip("Level Traction Control (0 = off, 10 = max)")]
         public int tcLevel = 5;
+        
+        [Tooltip("Enable ABS")]
+        public bool absEnabled = true;
         
         [Tooltip("Level ABS (0 = off, 10 = max)")]
         public int absLevel = 7;
@@ -297,5 +334,80 @@ namespace RacingSim.Vehicle
         FWD,
         RWD,
         AWD
+    }
+    
+    /// <summary>
+    /// Tire coefficients for Pacejka Magic Formula
+    /// Can be serialized in Unity Inspector
+    /// </summary>
+    [System.Serializable]
+    public struct TireCoefficientsData
+    {
+        [Header("Lateral Coefficients (Fy)")]
+        public float pCy1;  // Shape factor lateral
+        public float pDy1, pDy2;  // Peak value lateral
+        public float pEy1, pEy2, pEy3;  // Curvature lateral
+        public float pKy1, pKy2, pKy3;  // Stiffness lateral
+        
+        [Header("Longitudinal Coefficients (Fx)")]
+        public float pCx1;  // Shape factor longitudinal
+        public float pDx1, pDx2;  // Peak value longitudinal
+        public float pEx1, pEx2, pEx3;  // Curvature longitudinal
+        public float pKx1, pKx2;  // Stiffness longitudinal
+        
+        [Header("Combined Slip Coefficients")]
+        public float rBx1, rBx2;  // Combined longitudinal
+        public float rBy1, rBy2;  // Combined lateral
+        public float rCx1, rCy1;  // Combined shape factors
+        
+        [Header("Aligning Torque Coefficients")]
+        public float qBz1, qBz2;  // Trail stiffness
+        public float qCz1;  // Trail shape
+        public float qDz1, qDz2;  // Trail peak
+        public float qEz1, qEz2;  // Trail curvature
+        
+        /// <summary>
+        /// Default coefficients for F1 slick tires
+        /// </summary>
+        public static TireCoefficientsData Default => new TireCoefficientsData
+        {
+            // Lateral
+            pCy1 = 1.3f,
+            pDy1 = 1.9f,
+            pDy2 = 0f,
+            pEy1 = -1.7f,
+            pEy2 = 0f,
+            pEy3 = 0f,
+            pKy1 = 15f,
+            pKy2 = 2f,
+            pKy3 = 0.5f,
+            
+            // Longitudinal
+            pCx1 = 1.65f,
+            pDx1 = 1.1f,
+            pDx2 = 0f,
+            pEx1 = 0.48f,
+            pEx2 = 0f,
+            pEx3 = 0f,
+            pKx1 = 25f,
+            pKx2 = 3f,
+            
+            // Combined
+            rBx1 = 8f,
+            rBx2 = 0f,
+            rBy1 = 8f,
+            rBy2 = 0f,
+            rCx1 = 1.3f,
+            rCy1 = 1.3f,
+            
+            // Aligning torque
+            qBz1 = 9f,
+            qBz2 = -3f,
+            qCz1 = 1.01f,
+            qDz1 = 0f,
+            qDz2 = 0f,
+            qEz1 = 0.01f,
+            qEz2 = 0f
+        };
     }
 }

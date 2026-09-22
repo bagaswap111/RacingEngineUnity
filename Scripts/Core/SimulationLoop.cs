@@ -309,7 +309,8 @@ namespace RacingSim.Core
             state.Position += state.Velocity * dt;
             
             // Angular acceleration: α = τ / I
-            float3 angularAccel = totalTorque / config.momentOfInertia;
+            float3 momentOfInertia = new float3(config.momentOfInertiaX, config.momentOfInertiaY, config.momentOfInertiaZ);
+            float3 angularAccel = math.cdiv(totalTorque, momentOfInertia);  // Component-wise division
             
             // Update angular velocity
             state.AngularVelocity += angularAccel * dt;
@@ -317,14 +318,21 @@ namespace RacingSim.Core
             // Apply angular damping
             state.AngularVelocity *= (1f - config.angularDampingCoefficient * dt);
             
-            // Update rotation (quaternion integration)
-            quaternion deltaRot = new quaternion(
-                0f,
-                state.AngularVelocity.x * dt,
-                state.AngularVelocity.y * dt,
-                state.AngularVelocity.z * dt);
-            
-            state.Rotation = math.normalize(state.Rotation + deltaRot * 0.5f);
+            // Update rotation using proper quaternion integration
+            // dq/dt = 0.5 * q * ω (as quaternion multiplication)
+            float mag = math.length(state.AngularVelocity);
+            if (mag > 1e-6f)
+            {
+                float halfAngle = mag * dt * 0.5f;
+                float sinHalfAngle = math.sin(halfAngle);
+                quaternion deltaRot = new quaternion(
+                    math.cos(halfAngle),
+                    state.AngularVelocity.x * sinHalfAngle / mag,
+                    state.AngularVelocity.y * sinHalfAngle / mag,
+                    state.AngularVelocity.z * sinHalfAngle / mag
+                );
+                state.Rotation = math.normalize(math.mul(state.Rotation, deltaRot));
+            }
             
             // ============================================================
             // STEP 8: Thermal Updates
