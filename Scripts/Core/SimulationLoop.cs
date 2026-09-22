@@ -452,68 +452,348 @@ namespace RacingSim.Core
             }
         }
         
+        /// <summary>
+        /// Calculate suspension travel based on wheel position relative to body
+        /// Uses raycast-like approach from wheel hub to ground plane
+        /// </summary>
         [BurstCompile]
         private static float CalculateSuspensionTravel(SimulationState state, int wheelIndex, in VehicleConfig config)
         {
-            // Simplified - would calculate from wheel position relative to body
-            return 0f;
+            // Get wheel position in local space
+            float3 wheelPosLocal = GetWheelPositionLocal(wheelIndex, config);
+            
+            // Transform to world space
+            float3 wheelPosWorld = math.mul(state.Rotation, wheelPosLocal) + state.Position;
+            
+            // Simple ground plane assumption (y = 0)
+            // In real implementation, would use track height map
+            float groundHeight = 0f;
+            
+            // Calculate distance from wheel hub to ground
+            float rideHeight = wheelPosWorld.y - groundHeight;
+            
+            // Suspension travel = nominal ride height - current ride height
+            float nominalRideHeight = 0.08f; // 80mm static ride height
+            float travel = nominalRideHeight - rideHeight;
+            
+            // Clamp to physical limits (±80mm travel)
+            return math.clamp(travel, -0.08f, 0.08f);
         }
         
+        /// <summary>
+        /// Calculate tire grip multiplier based on temperature and wear
+        /// Optimal temperature range: 90-110°C for slick tires
+        /// </summary>
         [BurstCompile]
         private static float GetTireGripMultiplier(SimulationState state, int index, in VehicleConfig config)
         {
-            return 1f;
+            // Get average tire temperature for this wheel
+            float tempInner, tempMiddle, tempOuter;
+            GetTireTemps(state, index, out tempInner, out tempMiddle, out tempOuter);
+            
+            float avgTemp = (tempInner + tempMiddle + tempOuter) / 3f;
+            
+            // Temperature grip curve (optimal at 100°C)
+            float optimalTemp = 100f;
+            float tempRange = 40f;
+            float tempMultiplier = math.exp(-math.pow((avgTemp - optimalTemp) / tempRange, 2));
+            
+            // Wear multiplier (linear degradation)
+            float wear = GetTireWear(state, index);
+            float wearMultiplier = 1f - (wear * 0.3f); // Max 30% loss at full wear
+            
+            // Pressure multiplier (optimal pressure ~200 kPa)
+            float pressure = GetTirePressure(state, index);
+            float optimalPressure = 200f;
+            float pressureMultiplier = 1f - math.abs(pressure - optimalPressure) / 100f;
+            pressureMultiplier = math.max(pressureMultiplier, 0.7f);
+            
+            return tempMultiplier * wearMultiplier * pressureMultiplier;
         }
         
         [BurstCompile]
-        private static float GetTireTempInner(SimulationState state, int index) => state.Thermal.TireTempFL_Inner;
-        [BurstCompile]
-        private static float GetTireTempMiddle(SimulationState state, int index) => state.Thermal.TireTempFL_Middle;
-        [BurstCompile]
-        private static float GetTireTempOuter(SimulationState state, int index) => state.Thermal.TireTempFL_Outer;
-        
-        [BurstCompile]
-        private static void SetTireTemps(ref SimulationState state, int index, float inner, float middle, float outer) 
+        private static float GetTireTempInner(SimulationState state, int index)
         {
-            // Would set per-wheel temps based on index
+            switch (index)
+            {
+                case 0: return state.Thermal.TireTempFL_Inner;
+                case 1: return state.Thermal.TireTempFR_Inner;
+                case 2: return state.Thermal.TireTempRL_Inner;
+                case 3: return state.Thermal.TireTempRR_Inner;
+                default: return 0f;
+            }
         }
         
         [BurstCompile]
-        private static float GetBrakeTemp(SimulationState state, int index) => state.Thermal.BrakeTempFL;
-        [BurstCompile]
-        private static void SetBrakeTemp(ref SimulationState state, int index, float temp) 
+        private static float GetTireTempMiddle(SimulationState state, int index)
         {
-            // Would set per-wheel brake temp based on index
+            switch (index)
+            {
+                case 0: return state.Thermal.TireTempFL_Middle;
+                case 1: return state.Thermal.TireTempFR_Middle;
+                case 2: return state.Thermal.TireTempRL_Middle;
+                case 3: return state.Thermal.TireTempRR_Middle;
+                default: return 0f;
+            }
         }
         
         [BurstCompile]
-        private static float GetTireWear(SimulationState state, int index) => state.Damage.TireWearFL;
-        [BurstCompile]
-        private static float GetBrakeWear(SimulationState state, int index) => state.Damage.BrakeWearFL;
-        
-        [BurstCompile]
-        private static void SetTireWear(ref SimulationState state, int index, float wear) 
+        private static float GetTireTempOuter(SimulationState state, int index)
         {
-            // Would set per-wheel wear based on index
+            switch (index)
+            {
+                case 0: return state.Thermal.TireTempFL_Outer;
+                case 1: return state.Thermal.TireTempFR_Outer;
+                case 2: return state.Thermal.TireTempRL_Outer;
+                case 3: return state.Thermal.TireTempRR_Outer;
+                default: return 0f;
+            }
         }
         
         [BurstCompile]
-        private static void SetTirePunctured(ref SimulationState state, int index, bool punctured) 
+        private static void GetTireTemps(SimulationState state, int index, out float inner, out float middle, out float outer)
         {
-            // Would set per-wheel puncture status based on index
+            inner = GetTireTempInner(state, index);
+            middle = GetTireTempMiddle(state, index);
+            outer = GetTireTempOuter(state, index);
         }
         
         [BurstCompile]
-        private static float AverageRideHeight(SimulationState state, bool front) => 0.05f;
+        private static void SetTireTemps(ref SimulationState state, int index, float inner, float middle, float outer)
+        {
+            switch (index)
+            {
+                case 0:
+                    state.Thermal.TireTempFL_Inner = inner;
+                    state.Thermal.TireTempFL_Middle = middle;
+                    state.Thermal.TireTempFL_Outer = outer;
+                    break;
+                case 1:
+                    state.Thermal.TireTempFR_Inner = inner;
+                    state.Thermal.TireTempFR_Middle = middle;
+                    state.Thermal.TireTempFR_Outer = outer;
+                    break;
+                case 2:
+                    state.Thermal.TireTempRL_Inner = inner;
+                    state.Thermal.TireTempRL_Middle = middle;
+                    state.Thermal.TireTempRL_Outer = outer;
+                    break;
+                case 3:
+                    state.Thermal.TireTempRR_Inner = inner;
+                    state.Thermal.TireTempRR_Middle = middle;
+                    state.Thermal.TireTempRR_Outer = outer;
+                    break;
+            }
+        }
         
         [BurstCompile]
-        private static float3 GetWheelPositionLocal(int index, in VehicleConfig config) => new float3();
+        private static float GetBrakeTemp(SimulationState state, int index)
+        {
+            switch (index)
+            {
+                case 0: return state.Thermal.BrakeTempFL;
+                case 1: return state.Thermal.BrakeTempFR;
+                case 2: return state.Thermal.BrakeTempRL;
+                case 3: return state.Thermal.BrakeTempRR;
+                default: return 0f;
+            }
+        }
         
         [BurstCompile]
-        private static float CalculateBrakeForce(float brakeInput, int wheelIndex, in VehicleConfig config, in Thermal.ThermalState thermal) => 0f;
+        private static void SetBrakeTemp(ref SimulationState state, int index, float temp)
+        {
+            switch (index)
+            {
+                case 0: state.Thermal.BrakeTempFL = temp; break;
+                case 1: state.Thermal.BrakeTempFR = temp; break;
+                case 2: state.Thermal.BrakeTempRL = temp; break;
+                case 3: state.Thermal.BrakeTempRR = temp; break;
+            }
+        }
         
         [BurstCompile]
-        private static float GetDriveTorqueForWheel(Drivetrain.DrivetrainState dt, int wheelIndex, in VehicleConfig config) => 0f;
+        private static float GetTireWear(SimulationState state, int index)
+        {
+            switch (index)
+            {
+                case 0: return state.Damage.TireWearFL;
+                case 1: return state.Damage.TireWearFR;
+                case 2: return state.Damage.TireWearRL;
+                case 3: return state.Damage.TireWearRR;
+                default: return 0f;
+            }
+        }
+        
+        [BurstCompile]
+        private static float GetBrakeWear(SimulationState state, int index)
+        {
+            switch (index)
+            {
+                case 0: return state.Damage.BrakeWearFL;
+                case 1: return state.Damage.BrakeWearFR;
+                case 2: return state.Damage.BrakeWearRL;
+                case 3: return state.Damage.BrakeWearRR;
+                default: return 0f;
+            }
+        }
+        
+        [BurstCompile]
+        private static float GetTirePressure(SimulationState state, int index)
+        {
+            switch (index)
+            {
+                case 0: return state.Wheels[0].Pressure;
+                case 1: return state.Wheels[1].Pressure;
+                case 2: return state.Wheels[2].Pressure;
+                case 3: return state.Wheels[3].Pressure;
+                default: return 0f;
+            }
+        }
+        
+        [BurstCompile]
+        private static void SetTireWear(ref SimulationState state, int index, float wear)
+        {
+            switch (index)
+            {
+                case 0: state.Damage.TireWearFL = wear; break;
+                case 1: state.Damage.TireWearFR = wear; break;
+                case 2: state.Damage.TireWearRL = wear; break;
+                case 3: state.Damage.TireWearRR = wear; break;
+            }
+        }
+        
+        [BurstCompile]
+        private static void SetTirePunctured(ref SimulationState state, int index, bool punctured)
+        {
+            switch (index)
+            {
+                case 0: state.Damage.TirePuncturedFL = punctured; break;
+                case 1: state.Damage.TirePuncturedFR = punctured; break;
+                case 2: state.Damage.TirePuncturedRL = punctured; break;
+                case 3: state.Damage.TirePuncturedRR = punctured; break;
+            }
+        }
+        
+        /// <summary>
+        /// Calculate average ride height for front or rear axle
+        /// Used for aerodynamic calculations
+        /// </summary>
+        [BurstCompile]
+        private static float AverageRideHeight(SimulationState state, bool front)
+        {
+            if (front)
+            {
+                return (state.Wheels[0].RideHeight + state.Wheels[1].RideHeight) * 0.5f;
+            }
+            else
+            {
+                return (state.Wheels[2].RideHeight + state.Wheels[3].RideHeight) * 0.5f;
+            }
+        }
+        
+        /// <summary>
+        /// Get wheel position in local vehicle space
+        /// Coordinate system: X=forward, Y=up, Z=right
+        /// </summary>
+        [BurstCompile]
+        private static float3 GetWheelPositionLocal(int index, in VehicleConfig config)
+        {
+            float halfFrontTrack = config.frontTrackWidth * 0.5f;
+            float halfRearTrack = config.rearTrackWidth * 0.5f;
+            
+            switch (index)
+            {
+                case 0: // Front Left
+                    return new float3(config.cogToFrontAxle, -config.cogHeight, -halfFrontTrack);
+                case 1: // Front Right
+                    return new float3(config.cogToFrontAxle, -config.cogHeight, halfFrontTrack);
+                case 2: // Rear Left
+                    return new float3(-config.cogToRearAxle, -config.cogHeight, -halfRearTrack);
+                case 3: // Rear Right
+                    return new float3(-config.cogToRearAxle, -config.cogHeight, halfRearTrack);
+                default:
+                    return new float3(0f);
+            }
+        }
+        
+        /// <summary>
+        /// Calculate brake force with thermal fade consideration
+        /// Brake fade reduces effectiveness as temperature increases
+        /// </summary>
+        [BurstCompile]
+        private static float CalculateBrakeForce(float brakeInput, int wheelIndex, in VehicleConfig config, in Thermal.ThermalState thermal)
+        {
+            float brakeTemp = GetBrakeTemp(new SimulationState { Thermal = thermal }, wheelIndex);
+            
+            // Base brake torque from hydraulic pressure
+            float maxPressure = config.brakeMaxPressure;
+            float pressure = brakeInput * maxPressure;
+            
+            // Brake torque = pressure * caliper area * friction * radius
+            float caliperArea = wheelIndex < 2 ? config.brakeCaliperAreaFront : config.brakeCaliperAreaRear;
+            float discRadius = wheelIndex < 2 ? config.brakeDiscRadiusFront : config.brakeDiscRadiusRear;
+            
+            // Friction coefficient decreases with temperature (brake fade)
+            float muBase = wheelIndex < 2 ? config.brakePadFrictionFront : config.brakePadFrictionRear;
+            float fadeTemp = 500f; // Temperature where fade starts
+            float muActual = muBase * math.exp(-math.max(0f, brakeTemp - fadeTemp) / 200f);
+            
+            float brakeTorque = pressure * caliperArea * muActual * discRadius;
+            
+            // Convert torque to force at contact patch
+            float brakeForce = brakeTorque / config.wheelRadius;
+            
+            return brakeForce;
+        }
+        
+        /// <summary>
+        /// Get drive torque distribution to specific wheel based on differential type
+        /// </summary>
+        [BurstCompile]
+        private static float GetDriveTorqueForWheel(Drivetrain.DrivetrainState dt, int wheelIndex, in VehicleConfig config)
+        {
+            // Get total torque from drivetrain
+            float totalTorque = dt.OutputTorque;
+            
+            // Distribute based on differential type
+            switch (config.diffType)
+            {
+                case Drivetrain.DifferentialType.Open:
+                    // Equal torque split
+                    if (config.drivetrainType == Drivetrain.DrivetrainType.FWD && wheelIndex < 2)
+                        return totalTorque * 0.5f;
+                    else if (config.drivetrainType == Drivetrain.DrivetrainType.RWD && wheelIndex >= 2)
+                        return totalTorque * 0.5f;
+                    else if (config.drivetrainType == Drivetrain.DrivetrainType.AWD)
+                        return totalTorque * 0.25f;
+                    break;
+                    
+                case Drivetrain.DifferentialType.LimitedSlip:
+                    // LSD biases torque to wheel with more grip
+                    // Simplified: assume equal distribution for now
+                    if (config.drivetrainType == Drivetrain.DrivetrainType.FWD && wheelIndex < 2)
+                        return totalTorque * 0.5f;
+                    else if (config.drivetrainType == Drivetrain.DrivetrainType.RWD && wheelIndex >= 2)
+                        return totalTorque * 0.5f;
+                    else if (config.drivetrainType == Drivetrain.DrivetrainType.AWD)
+                        return totalTorque * 0.25f;
+                    break;
+                    
+                case Drivetrain.DifferentialType.Torsen:
+                    // Torsen can bias up to TBR (Torque Bias Ratio)
+                    float tbr = config.torsenTBR;
+                    // Simplified distribution
+                    if (config.drivetrainType == Drivetrain.DrivetrainType.FWD && wheelIndex < 2)
+                        return totalTorque * 0.5f;
+                    else if (config.drivetrainType == Drivetrain.DrivetrainType.RWD && wheelIndex >= 2)
+                        return totalTorque * 0.5f;
+                    else if (config.drivetrainType == Drivetrain.DrivetrainType.AWD)
+                        return totalTorque * 0.25f;
+                    break;
+            }
+            
+            return 0f;
+        }
     }
 
     /// <summary>
