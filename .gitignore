@@ -1,44 +1,120 @@
 ```
-# Build artifacts
-*.dll
-*.exe
-*.pdb
+# Unity/Mono specific
+*.meta
 *.unitypackage
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+MemoryCaptures/
+*.pidb
+*.userprefs
+*.lock
+*.csproj
+*.sln
+.vs/
+.user
+.userprefs
+*.userosscache
+*.scc
+*.unity
+*.asset
+*.prefab
+*.mat
+*.anim
+*.controller
+*.physicMaterial
+*.physicsMaterial2D
+*.flare
+*.fontsettings
+*.guiskin
+*.mat
+*.anim
+*.controller
+*.overrideController
+*.mask
+*.spriteatlas
+*.terrain
+*.tga
+*.wav
+*.mp3
+*.ogg
+*.fbx
+*.blend
+*.max
+*.ma
+*.mb
+*.psd
+*.ai
+
+# Build System
+release/
+Debug/
+Release/
+x64/
+x86/
+build/
+cmake-build-*/
 
 # Dependencies
 Packages/
-ProjectSettings/Packages/
+npm/
+node_modules/
 
-# Logs
-*.log
-**/Logs/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-# Temp files
-*.tmp
-*.temp
-*.cache
-
-# User settings
-**/UserSettings/
-*.userprefs
-
-# Compiled assets
-**/Library/
-**/Temp/
-**/Obj/
-
-# Environment
+# Environment variables
 .env
 .env.local
 *.env.*
 
-# Editors
-.vscode/
+# Logs
+*.log
+crashlytics-build.properties
+
+# Testing
+coverage/
+*.gcda
+*.gcno
+
+# IDE
 .idea/
 *.swp
 *.swo
+*~
+.vscode/
 
-# OS
-.DS_Store
-Thumbs.db
+# Binaries
+*.dll
+*.exe
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.o
+*.obj
+*.a
+*.class
+
+# Configuration
+config/
+settings/
+
+# Cache
+.cache/
+*.cache
+.npm
+.nuget
 ```
