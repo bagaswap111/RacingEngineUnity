@@ -67,6 +67,7 @@ namespace RacingSim.Aero
         public float DownforceReductionFactor;
         public float BaseTurbulence;
         public float CarWidth;
+        public float SlipstreamDetectionRadius;
 
         [Header("Crosswind")]
         public float GustAmplitude;
@@ -128,6 +129,7 @@ namespace RacingSim.Aero
                 DownforceReductionFactor = 0.5f,
                 BaseTurbulence = 0.3f,
                 CarWidth = 1.8f,
+                SlipstreamDetectionRadius = 50f,
 
                 GustAmplitude = 5f,
                 GustFrequency = 0.5f,
@@ -197,6 +199,7 @@ namespace RacingSim.Aero
         public float DownforceMultiplier;
         public float TurbulenceIntensity;
         public float TotalVelocityDeficit;
+        public bool SlipstreamActive;
     }
 
     public struct GroundEffectResult

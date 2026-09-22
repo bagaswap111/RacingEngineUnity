@@ -155,12 +155,24 @@ namespace RacingSim.Damage
 
         private void RepairPanelLerp(PanelZone panel, float speed)
         {
-            panel.ResetToOriginal();
+            if (panel.DeformableVertices == null || panel.OriginalVertices == null) return;
+            for (int i = 0; i < panel.DeformableVertices.Length; i++)
+            {
+                panel.DeformableVertices[i] = Unity.Mathematics.math.lerp(
+                    panel.DeformableVertices[i], panel.OriginalVertices[i], speed);
+            }
         }
 
         private void RepairNodeBeamLerp(NodeBeamZone nodeBeam, float speed)
         {
-            nodeBeam.ResetToOriginal();
+            var nodes = nodeBeam.GetNodes();
+            if (nodes == null) return;
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                var node = nodes[i];
+                node.Position = Unity.Mathematics.math.lerp(node.Position, node.OriginalPosition, speed);
+                nodes[i] = node;
+            }
         }
 
         /// <summary>

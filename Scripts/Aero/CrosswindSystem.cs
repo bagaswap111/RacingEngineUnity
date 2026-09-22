@@ -27,8 +27,8 @@ namespace RacingSim.Aero
             gust.x = math.sin(time * config.GustFrequency * 6.28f) * config.GustAmplitude;
             gust.z = math.cos(time * config.GustFrequency * 7.3f + 1.5f) * config.GustAmplitude * 0.7f;
 
-            float noiseX = Mathf.PerlinNoise(vehiclePosition.x * 0.01f + time * 0.1f, time * 0.2f);
-            float noiseZ = Mathf.PerlinNoise(vehiclePosition.z * 0.01f + time * 0.15f, time * 0.25f + 50f);
+            float noiseX = (math.sin(vehiclePosition.x * 0.01f + time * 0.1f) + 1f) * 0.5f;
+            float noiseZ = (math.sin(vehiclePosition.z * 0.01f + time * 0.15f + 50f) + 1f) * 0.5f;
             float3 turbulence = new float3(
                 (noiseX - 0.5f) * 2f,
                 0f,
@@ -38,7 +38,7 @@ namespace RacingSim.Aero
             float3 windVector = windDirection * windSpeed + gust + turbulence;
             result.WindVector = windVector;
 
-            float3 relWind = windVector;
+            float3 relWind = windVector - vehicleVelocity;
             float relSpeed = math.length(relWind);
 
             if (relSpeed < 0.1f)

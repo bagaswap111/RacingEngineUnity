@@ -8,10 +8,8 @@ namespace RacingSim.Aero
     /// Slipstream and wake turbulence system.
     /// Calculates drag reduction and downforce loss when following another vehicle.
     /// </summary>
-    [BurstCompile]
     public static class SlipstreamSystem
     {
-        [BurstCompile]
         public static SlipstreamResult Calculate(
             float3 egoPosition,
             float3 egoForward,

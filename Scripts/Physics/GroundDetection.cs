@@ -144,7 +144,9 @@ namespace RacingSim.Physics
 
             if (hitCount > 0)
             {
-                avgHit.Normal = math.normalize(avgNormal / hitCount);
+                float3 avgN = avgNormal / hitCount;
+                float avgLen = math.length(avgN);
+                avgHit.Normal = avgLen > 0.001f ? avgN / avgLen : new float3(0, 1, 0);
                 avgHit.SurfaceGrip = avgGrip / hitCount;
                 avgHit.Distance = totalDist / hitCount;
             }

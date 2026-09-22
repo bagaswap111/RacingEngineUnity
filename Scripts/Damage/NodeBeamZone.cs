@@ -343,7 +343,7 @@ namespace RacingSim.Damage
                 float3 attachForce = toOriginal * ATTACHMENT_SPRING;
                 float3 attachDamp = -node.Velocity * ATTACHMENT_DAMPING;
 
-                node.Force = attachForce + attachDamp;
+                node.Force += attachForce + attachDamp;
                 nodes[n] = node;
             }
         }

@@ -22,8 +22,8 @@ namespace RacingSim.Aero
         {
             GroundEffectResult result = new GroundEffectResult();
 
-            float rhNormF = rideHeightFront / config.RHReference;
-            float rhNormR = rideHeightRear / config.RHReference;
+            float rhNormF = config.RHReference > 0.001f ? rideHeightFront / config.RHReference : 1f;
+            float rhNormR = config.RHReference > 0.001f ? rideHeightRear / config.RHReference : 1f;
 
             float fHeightF = CalculateHeightFactor(rhNormF);
             float fHeightR = CalculateHeightFactor(rhNormR);

@@ -38,6 +38,7 @@ namespace RacingSim.Physics
 
         private Rigidbody vehicleRigidbody;
         private float[] prevTravels = new float[4];
+        private float3 prevLocalVelocity;
 
         private void Awake()
         {
@@ -74,12 +75,13 @@ namespace RacingSim.Physics
             float targetRoll = RollDynamics.CalculateRollAngle(
                 latAccel, vehicleMass, cgHeight, totalRollStiff);
 
-            rollAngle = RollDynamics.CalculateDynamicRoll(
+            float newRollAngle = RollDynamics.CalculateDynamicRoll(
                 rollAngle, rollVelocity,
                 latAccel, vehicleMass, cgHeight,
                 totalRollStiff, rollDamping, rollInertia, dt);
 
-            rollVelocity = (rollAngle - (rollAngle - rollVelocity * dt)) / dt;
+            rollVelocity = dt > 0.0001f ? (newRollAngle - rollAngle) / dt : 0f;
+            rollAngle = newRollAngle;
 
             LoadTransferResult loadTransfer = RollDynamics.CalculateLoadTransfer(
                 vehicleMass, longAccel, latAccel, cgHeight,
@@ -229,14 +231,22 @@ namespace RacingSim.Physics
         {
             if (vehicleRigidbody == null) return 0f;
             Vector3 localVel = transform.InverseTransformDirection(vehicleRigidbody.velocity);
-            return localVel.z;
+            float currentZ = localVel.z;
+            float dt = Time.fixedDeltaTime;
+            float accel = dt > 0.0001f ? (currentZ - prevLocalVelocity.z) / dt : 0f;
+            prevLocalVelocity.z = currentZ;
+            return accel;
         }
 
         private float CalculateLateralAccel()
         {
             if (vehicleRigidbody == null) return 0f;
             Vector3 localVel = transform.InverseTransformDirection(vehicleRigidbody.velocity);
-            return localVel.x;
+            float currentX = localVel.x;
+            float dt = Time.fixedDeltaTime;
+            float accel = dt > 0.0001f ? (currentX - prevLocalVelocity.x) / dt : 0f;
+            prevLocalVelocity.x = currentX;
+            return accel;
         }
 
         private float CalculateLateralForceForWheel(int wheelIndex)

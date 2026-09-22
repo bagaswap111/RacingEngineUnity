@@ -40,7 +40,7 @@ namespace RacingSim.Physics
             float restoringMoment = rollStiffness * currentRollAngle;
             float dampingMoment = rollDamping * currentRollVelocity;
 
-            float angularAccel = (rollMoment - restoringMoment - dampingMoment) / rollInertia;
+            float angularAccel = rollInertia > 0.0001f ? (rollMoment - restoringMoment - dampingMoment) / rollInertia : 0f;
             float newVelocity = currentRollVelocity + angularAccel * dt;
             float newAngle = currentRollAngle + newVelocity * dt;
 

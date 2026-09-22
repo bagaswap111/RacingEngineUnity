@@ -100,7 +100,8 @@ namespace RacingSim.Aero
                 return;
             }
 
-            float3 localVel = relVelocity;
+            quaternion vehicleRot = transform.rotation;
+            float3 localVel = math.mul(math.inverse(vehicleRot), relVelocity);
             float yawAngle = math.atan2(localVel.z, math.abs(localVel.x));
 
             float q = 0.5f * config.AirDensitySeaLevel * speed * speed;
@@ -211,13 +212,54 @@ namespace RacingSim.Aero
 
         private SlipstreamResult CalculateSlipstream()
         {
-            return new SlipstreamResult
+            SlipstreamResult result = new SlipstreamResult
             {
                 DragMultiplier = 1f,
                 DownforceMultiplier = 1f,
                 TurbulenceIntensity = 0f,
-                TotalVelocityDeficit = 0f
+                TotalVelocityDeficit = 0f,
+                SlipstreamActive = false
             };
+
+            if (config.SlipstreamDetectionRadius <= 0f) return result;
+
+            Collider[] nearby = Physics.OverlapSphere(
+                transform.position, config.SlipstreamDetectionRadius,
+                LayerMask.GetMask("Vehicle"));
+
+            float totalDeficit = 0f;
+            float maxTurb = 0f;
+
+            for (int i = 0; i < nearby.Length && i < 8; i++)
+            {
+                if (nearby[i].transform == transform) continue;
+
+                float3 otherPos = nearby[i].transform.position;
+                float3 toOther = otherPos - transform.position;
+                float dist = math.length(toOther);
+
+                if (dist < 1f || dist > config.SlipstreamDetectionRadius) continue;
+
+                float3 otherForward = nearby[i].transform.forward;
+                float alignment = math.dot(math.normalizesafe(toOther), otherForward);
+
+                if (alignment > 0.3f)
+                {
+                    float deficit = (1f - dist / config.SlipstreamDetectionRadius) * alignment;
+                    totalDeficit += deficit * 0.5f;
+                    maxTurb = math.max(maxTurb, deficit * 0.1f);
+                }
+            }
+
+            totalDeficit = math.clamp(totalDeficit, 0f, 0.6f);
+
+            result.TotalVelocityDeficit = totalDeficit;
+            result.DragMultiplier = 1f - totalDeficit * config.DragReductionFactor;
+            result.DownforceMultiplier = 1f - totalDeficit * config.DownforceReductionFactor;
+            result.TurbulenceIntensity = maxTurb;
+            result.SlipstreamActive = totalDeficit > 0.01f;
+
+            return result;
         }
 
         private void UpdateDRS(float dt)
@@ -249,7 +291,6 @@ namespace RacingSim.Aero
 
             float3 down = new float3(0, -1, 0);
             float3 right = new float3(1, 0, 0);
-            float3 forward = new float3(0, 0, 1);
 
             float3 dragForce = -math.normalizesafe(vehicleVelocity) * currentForces.Drag;
             vehicleRigidbody.AddForce(dragForce, ForceMode.Force);
@@ -257,7 +298,7 @@ namespace RacingSim.Aero
             if (frontAxleTransform != null)
             {
                 vehicleRigidbody.AddForceAtPosition(
-                    down * currentForces.DownforceFront,
+                    down * math.abs(currentForces.DownforceFront),
                     frontAxleTransform.position,
                     ForceMode.Force);
             }
@@ -265,7 +306,7 @@ namespace RacingSim.Aero
             if (rearAxleTransform != null)
             {
                 vehicleRigidbody.AddForceAtPosition(
-                    down * currentForces.DownforceRear,
+                    down * math.abs(currentForces.DownforceRear),
                     rearAxleTransform.position,
                     ForceMode.Force);
             }

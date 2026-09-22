@@ -101,7 +101,7 @@ namespace RacingSim.Physics
             float arbRatio)
         {
             float travelDiff = travel - oppositeTravel;
-            return -(arbRate * travelDiff * arbRatio + arbPreload);
+            return arbRate * travelDiff * arbRatio + arbPreload;
         }
 
         [BurstCompile]

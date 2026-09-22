@@ -49,6 +49,9 @@ namespace RacingSim.Damage
 
         private void InitializeFractureSystem()
         {
+            if (attachmentBreakForces == null)
+                attachmentBreakForces = new float[0];
+
             if (attachmentTransforms == null || attachmentTransforms.Length == 0)
             {
                 attachmentTransforms = new Transform[0];

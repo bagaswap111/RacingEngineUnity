@@ -95,14 +95,18 @@ namespace RacingSim.Damage
             CleanupExpiredDebris();
         }
 
+        private Transform cachedCameraTransform;
+
         private void UpdateLOD()
         {
             if (lodManager == null) return;
 
-            Transform cam = Camera.main?.transform;
-            if (cam != null)
+            if (cachedCameraTransform == null)
+                cachedCameraTransform = Camera.main?.transform;
+
+            if (cachedCameraTransform != null)
             {
-                lodManager.UpdateLOD(cam.position, transform.position);
+                lodManager.UpdateLOD(cachedCameraTransform.position, transform.position);
             }
         }
 
