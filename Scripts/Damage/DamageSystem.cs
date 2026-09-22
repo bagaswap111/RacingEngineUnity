@@ -114,6 +114,9 @@ namespace RacingSim.Damage
 
     /// <summary>
     /// Mechanical damage system for vehicle components
+    /// TODO: [ARCH-001] Wire to DamageConfig asset when created.
+    /// Current VehicleConfig lacks damage fields (engineRedlineRPM,
+    /// engineDamageOverrevRate, etc.). See architectural decision doc.
     /// </summary>
     [BurstCompile]
     public static class MechanicalDamageSystem
@@ -271,6 +274,8 @@ namespace RacingSim.Damage
 
         /// <summary>
         /// Update aerodynamic damage
+        /// TODO: [ARCH-001] Remove string param (Burst incompatible),
+        /// use enum or int zone ID instead.
         /// </summary>
         [BurstCompile]
         public static (float frontDamage, float rearDamage) UpdateAeroDamage(
