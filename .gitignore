@@ -1,120 +1,71 @@
-```
-# Unity/Mono specific
-*.meta
-*.unitypackage
-Library/
-Temp/
-Obj/
-Build/
-Builds/
-Logs/
-MemoryCaptures/
-*.pidb
-*.userprefs
-*.lock
-*.csproj
-*.sln
-.vs/
-.user
-.userprefs
-*.userosscache
-*.scc
-*.unity
-*.asset
-*.prefab
-*.mat
-*.anim
-*.controller
-*.physicMaterial
-*.physicsMaterial2D
-*.flare
-*.fontsettings
-*.guiskin
-*.mat
-*.anim
-*.controller
-*.overrideController
-*.mask
-*.spriteatlas
-*.terrain
-*.tga
-*.wav
-*.mp3
-*.ogg
-*.fbx
-*.blend
-*.max
-*.ma
-*.mb
-*.psd
-*.ai
-
-# Build System
-release/
-Debug/
-Release/
-x64/
-x86/
-build/
-cmake-build-*/
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
 # Dependencies
-Packages/
-npm/
+.venv/
+venv/
 node_modules/
+dist/
+build/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+.julia/
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
 
-# Environment variables
+# Environment
 .env
 .env.local
 *.env.*
 
-# Logs
-*.log
-crashlytics-build.properties
-
-# Testing
-coverage/
-*.gcda
-*.gcno
-
-# IDE
-.idea/
-*.swp
-*.swo
-*~
+# Editors
 .vscode/
+.idea/
 
-# Binaries
-*.dll
-*.exe
-*.so
-*.dylib
-*.pdb
-*.ilk
-*.exp
-*.lib
-*.o
-*.obj
-*.a
-*.class
+# System files
+.DS_Store
+Thumbs.db
 
-# Configuration
-config/
-settings/
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
-# Cache
-.cache/
-*.cache
-.npm
-.nuget
-```
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
