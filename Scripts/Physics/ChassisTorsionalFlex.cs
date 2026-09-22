@@ -66,8 +66,10 @@ namespace RacingSim.Physics
             float restoringTorque = config.TorsionalStiffness * state.TorsionAngle;
             float dampingTorque = config.FlexDamping * state.TorsionVelocity;
 
-            float angularAccel = (rollTorque - restoringTorque - dampingTorque)
-                               / (config.TorsionalStiffness * 0.001f);
+            float inertia = config.TorsionalStiffness * 0.0001f;
+            float angularAccel = inertia > 0.0001f
+                ? (rollTorque - restoringTorque - dampingTorque) / inertia
+                : 0f;
 
             state.TorsionVelocity += angularAccel * dt;
             state.TorsionAngle += state.TorsionVelocity * dt;

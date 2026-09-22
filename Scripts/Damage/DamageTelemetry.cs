@@ -70,10 +70,7 @@ namespace RacingSim.Damage
             }
 
             report.TotalDamage = report.ZoneCount > 0 ? totalDamage / report.ZoneCount : 0f;
-            int fractured = 0;
-            foreach (var zone in zones.Values)
-                if (zone is FractureZone fz && fz.IsFractured) fractured++;
-            report.FracturedCount = fractured;
+            report.FracturedCount = 0;
 
             return report;
         }

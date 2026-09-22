@@ -95,7 +95,7 @@ namespace RacingSim.Aero
             return 1f - (actualForce / steadyStateForce);
         }
 
-        [BurstCompile>
+        [BurstCompile]
         public static float CalculateOscillationRisk(
             float rideHeightChange,
             float speed,

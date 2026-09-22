@@ -77,7 +77,7 @@ namespace RacingSim.Core
             state.FuelMass = state.FuelLevel * config.FuelDensity;
 
             float3 localAccel = new float3(acceleration.x, 0f, acceleration.z);
-            float lateralG = math.abs(acceleration.y) / 9.81f;
+            float lateralG = math.abs(acceleration.x) / 9.81f;
             float longG = math.abs(acceleration.z) / 9.81f;
 
             state.CoGOffset = new float3(

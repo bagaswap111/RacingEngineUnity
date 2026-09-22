@@ -83,12 +83,17 @@ namespace RacingSim.Damage
                 return result;
 
             float3 n = normal;
-            float rAxN = math.length(math.cross(rA, n));
-            float rBxN = math.length(math.cross(rB, n));
+            float3 rAxN = math.cross(rA, n);
+            float3 rBxN = math.cross(rB, n);
 
-            float denom = (1f / massA + 1f / massB)
-                        + (rAxN * rAxN / math.lengthsq(inertiaA))
-                        + (rBxN * rBxN / math.lengthsq(inertiaB));
+            float invInertiaA = (rAxN.x * rAxN.x / inertiaA.x)
+                              + (rAxN.y * rAxN.y / inertiaA.y)
+                              + (rAxN.z * rAxN.z / inertiaA.z);
+            float invInertiaB = (rBxN.x * rBxN.x / inertiaB.x)
+                              + (rBxN.y * rBxN.y / inertiaB.y)
+                              + (rBxN.z * rBxN.z / inertiaB.z);
+
+            float denom = (1f / massA + 1f / massB) + invInertiaA + invInertiaB;
 
             float j = -(1f + config.Restitution) * vRelN / denom;
             j = math.clamp(j, -config.MaxImpulse, config.MaxImpulse);
@@ -142,10 +147,19 @@ namespace RacingSim.Damage
             float3 relativeVel = velA - velB;
             float combinedRadius = radiusA + radiusB;
 
-            float projDist = math.dot(relativePos, math.normalize(relativeVel));
-            float timeToImpact = projDist / math.length(relativeVel);
+            float relSpeed = math.length(relativeVel);
+            if (relSpeed < 0.001f)
+                return false;
 
-            return timeToImpact < dt;
+            float3 relDir = relativeVel / relSpeed;
+            float projDist = math.dot(relativePos, relDir);
+
+            if (projDist < 0f)
+                return false;
+
+            float timeToImpact = (projDist - combinedRadius) / relSpeed;
+
+            return timeToImpact < dt && timeToImpact > 0f;
         }
     }
 }

@@ -75,15 +75,15 @@ namespace RacingSim.Physics
 
             if (state.WheelPosition <= groundHeight + 0.001f)
             {
-                state.WheelPosition = groundHeight + 0.001f;
-                state.WheelVelocity = math.max(state.WheelVelocity, 0f);
                 state.IsGrounded = true;
 
                 float penetration = groundHeight - state.WheelPosition;
-                tireForce = config.TireStiffness * (-penetration)
+                tireForce = config.TireStiffness * penetration
                           + config.TireDamping * (-state.WheelVelocity);
 
-                tireForce = math.max(tireForce, 0f);
+                state.WheelVelocity += (tireForce - config.Mass * GRAVITY) / config.Mass * 0.001f;
+                state.WheelPosition = groundHeight + 0.001f;
+                state.WheelVelocity = math.max(state.WheelVelocity, 0f);
             }
 
             float netForce = chassisVerticalForce
