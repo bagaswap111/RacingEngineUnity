@@ -6,7 +6,6 @@ namespace RacingSim.Core
     /// </summary>
     public static class VehicleConstants
     {
-        [System.Obsolete("Pending WheelConfig implementation")]
         public const float DEFAULT_WHEEL_RADIUS = 0.33f;
 
         public const float GRAVITY = 9.81f;

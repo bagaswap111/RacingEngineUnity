@@ -143,6 +143,7 @@ namespace RacingSim.Aero
         }
     }
 
+    [System.Serializable]
     public struct AeroForces
     {
         public float Drag;

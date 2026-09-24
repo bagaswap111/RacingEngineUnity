@@ -117,7 +117,7 @@ namespace RacingSim.Core
                 angularVelocity.z * 0.5f,
                 0f);
             quaternion qDot = math.mul(omegaQuat, rotation);
-            rotation = math.normalize(rotation + qDot * dt);
+            rotation = math.normalize(new quaternion(rotation.value + qDot.value * dt));
 
             ClampVelocity();
             ClampAngularVelocity();

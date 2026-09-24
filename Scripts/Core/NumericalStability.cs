@@ -87,7 +87,7 @@ namespace RacingSim.Core
             float len = math.length(q.value);
             if (len < NaN_CHECK_EPSILON)
                 return quaternion.identity;
-            return q / len;
+            return new quaternion(q.value / len);
         }
 
         [BurstCompile]

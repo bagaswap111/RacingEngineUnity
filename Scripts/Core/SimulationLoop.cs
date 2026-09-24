@@ -103,6 +103,7 @@ namespace RacingSim.Core
             ref SimulationState state,
             float dt,
             in VehicleConfig config,
+            in DamageConfig damageConfig,
             NativeArray<float3> trackNormals,
             float3 windVelocity,
             float ambientTemp,
@@ -433,6 +434,7 @@ namespace RacingSim.Core
                 correctedThrottle,
                 dt,
                 config,
+                damageConfig,
                 out state.Damage.EngineMisfiring);
             
             // Tire wear
@@ -449,7 +451,7 @@ namespace RacingSim.Core
                     state.Wheels[i].SlipAngle,
                     distanceTraveled,
                     isLocked,
-                    config);
+                    damageConfig);
                 
                 SetTireWear(ref state, i, tireResult.wear);
                 SetTirePunctured(ref state, i, tireResult.punctured);
@@ -833,6 +835,7 @@ namespace RacingSim.Core
         
         [Header("References")]
         public VehicleConfig vehicleConfig;
+        public DamageConfig damageConfig;
         public Transform carTransform;
         
         // Simulation state
@@ -870,6 +873,7 @@ namespace RacingSim.Core
                 ref simState,
                 Time.fixedDeltaTime,
                 vehicleConfig,
+                damageConfig,
                 default, // track normals
                 windVelocity,
                 ambientTemp,

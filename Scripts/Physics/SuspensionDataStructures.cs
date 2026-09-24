@@ -161,6 +161,7 @@ namespace RacingSim.Physics
     // SUSPENSION STATE
     // ====================================================================
 
+    [System.Serializable]
     public struct SuspensionState
     {
         [Header("Travel")]
