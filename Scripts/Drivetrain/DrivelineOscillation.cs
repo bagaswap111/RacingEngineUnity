@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Mathematics;
+using RacingSim.Core;
 
 namespace RacingSim.Drivetrain
 {
@@ -38,7 +39,7 @@ namespace RacingSim.Drivetrain
                 DrivelineStiffness = 5000f,
                 DrivelineDamping = 50f,
                 DriveshaftAngle = 0.1f,
-                WheelRadius = 0.33f
+                WheelRadius = VehicleConstants.DEFAULT_WHEEL_RADIUS
             };
         }
     }

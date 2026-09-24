@@ -28,6 +28,7 @@ namespace RacingSim.Physics
 
         [Header("System References")]
         public GroundDetection groundDetection;
+        public IVehicleInput inputProvider;
 
         [Header("Runtime State")]
         public SuspensionState[] wheelStates = new SuspensionState[4];
@@ -45,6 +46,8 @@ namespace RacingSim.Physics
             vehicleRigidbody = GetComponent<Rigidbody>();
             if (groundDetection == null)
                 groundDetection = GetComponentInChildren<GroundDetection>();
+            if (inputProvider == null)
+                inputProvider = new LegacyInputProvider();
         }
 
         private void FixedUpdate()
@@ -102,7 +105,7 @@ namespace RacingSim.Physics
                 float targetTravel = 0f;
                 if (groundHit.DidHit)
                 {
-                    targetTravel = (0.33f - groundHit.Distance) * 1000f;
+                    targetTravel = (VehicleConstants.DEFAULT_WHEEL_RADIUS - groundHit.Distance) * 1000f;
                 }
 
                 targetTravel = math.clamp(targetTravel, -config.MaxDroopTravel, config.MaxBumpTravel);
@@ -187,7 +190,7 @@ namespace RacingSim.Physics
                 return new GroundHitData
                 {
                     DidHit = true,
-                    Distance = 0.33f,
+                    Distance = VehicleConstants.DEFAULT_WHEEL_RADIUS,
                     Normal = (float3)Vector3.up,
                     SurfaceGrip = 1f
                 };
@@ -261,17 +264,17 @@ namespace RacingSim.Physics
 
         private float GetSteerInput()
         {
-            return Input.GetAxis("Horizontal");
+            return inputProvider != null ? inputProvider.Steering : 0f;
         }
 
         private float GetThrottleInput()
         {
-            return Input.GetAxis("Vertical");
+            return inputProvider != null ? inputProvider.Throttle : 0f;
         }
 
         private float GetBrakeInput()
         {
-            return Input.GetKey(KeyCode.Space) ? 1f : 0f;
+            return inputProvider != null ? inputProvider.Brake : 0f;
         }
 
         private void ApplyForcesToRigidbody(int wheelIndex, SuspensionState state)

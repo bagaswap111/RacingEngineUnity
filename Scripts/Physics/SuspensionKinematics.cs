@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
+using RacingSim.Core;
 
 namespace RacingSim.Physics
 {
@@ -243,7 +244,7 @@ namespace RacingSim.Physics
         [BurstCompile]
         private static float3 CalculateContactPatch(in SuspensionState state)
         {
-            return state.HubPosition + new float3(0, -0.33f, 0);
+            return state.HubPosition + new float3(0, -VehicleConstants.DEFAULT_WHEEL_RADIUS, 0);
         }
 
         [BurstCompile]
