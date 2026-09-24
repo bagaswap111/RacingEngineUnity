@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using RacingSim.Vehicle;
 using System.Runtime.InteropServices;
 
 namespace RacingSim.Core

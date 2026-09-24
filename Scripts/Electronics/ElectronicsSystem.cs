@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Mathematics;
+using RacingSim.Vehicle;
 
 namespace RacingSim.Electronics
 {

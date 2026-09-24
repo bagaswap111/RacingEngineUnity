@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
+using RacingSim.Vehicle;
 
 namespace RacingSim.Drivetrain
 {

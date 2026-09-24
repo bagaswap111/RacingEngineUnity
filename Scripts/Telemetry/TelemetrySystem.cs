@@ -1,7 +1,9 @@
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
+using RacingSim.Vehicle;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace RacingSim.Telemetry
