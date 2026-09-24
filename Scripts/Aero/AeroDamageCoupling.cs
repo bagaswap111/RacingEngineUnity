@@ -7,10 +7,10 @@ namespace RacingSim.Aero
     /// Couples visual damage from the hybrid deformation engine
     /// to aerodynamic coefficients. Handles front/rear/wing/underbody/side damage.
     /// </summary>
-    [BurstCompile]
+
     public static class AeroDamageCoupling
     {
-        [BurstCompile]
+
         public static AeroDamageResult Calculate(
             float frontDamage,
             float rearDamage,
@@ -31,7 +31,6 @@ namespace RacingSim.Aero
             return result;
         }
 
-        [BurstCompile]
         public static void ApplyDamage(
             ref float Cd,
             ref float ClFront,
@@ -45,7 +44,6 @@ namespace RacingSim.Aero
             Cs *= (1f + damage.SideSensitivity);
         }
 
-        [BurstCompile]
         public static float ApplyGroundEffectDamage(
             float geContribution,
             in AeroDamageResult damage)

@@ -7,7 +7,7 @@ namespace RacingSim.Physics
     /// State untuk satu roda dalam simulasi.
     /// Menyimpan semua data kinematika, gaya, dan termal ban.
     /// </summary>
-    [BurstCompile]
+
     public struct WheelState
     {
         // Identitas roda
@@ -96,7 +96,7 @@ namespace RacingSim.Physics
     /// Sistem suspensi dengan model spring-damper dan kinematika.
     /// Menghitung gaya suspensi berdasarkan travel dan velocity.
     /// </summary>
-    [BurstCompile]
+
     public static class SuspensionSystem
     {
         /// <summary>
@@ -110,7 +110,7 @@ namespace RacingSim.Physics
         /// <param name="bumpStopTravel">Travel saat bump stop mulai (m)</param>
         /// <param name="bumpStopRate">Bump stop spring rate (N/m)</param>
         /// <returns>Gaya suspensi total (N), positif = menekan ke atas</returns>
-        [BurstCompile]
+
         public static float CalculateSuspensionForce(
             float travel,
             float velocity,
@@ -159,7 +159,7 @@ namespace RacingSim.Physics
         /// <param name="staticCamber">Static camber (radian)</param>
         /// <param name="staticToe">Static toe (radian)</param>
         /// <returns>Tuple (camber, toe, caster) dalam radian</returns>
-        [BurstCompile]
+
         public static SuspensionKinematics CalculateKinematics(
             float travel,
             float steeringInput,
@@ -193,7 +193,7 @@ namespace RacingSim.Physics
         /// <param name="travelDirection">Arah travel suspensi dalam local space</param>
         /// <param name="travel">Suspensi travel (m)</param>
         /// <returns>Posisi hub dalam world space</returns>
-        [BurstCompile]
+
         public static float3 CalculateHubPosition(
             in float3 chassisPosition,
             in quaternion chassisRotation,
@@ -217,7 +217,7 @@ namespace RacingSim.Physics
         /// <param name="groundHeight">Tinggi ground di posisi tersebut</param>
         /// <param name="wheelRadius">Radius ban (m)</param>
         /// <returns>Ride height (m), negatif jika ban di bawah ground</returns>
-        [BurstCompile]
+
         public static float CalculateRideHeight(in float3 hubPosition, float groundHeight, float wheelRadius)
         {
             float hubHeight = hubPosition.y;

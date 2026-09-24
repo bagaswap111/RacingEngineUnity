@@ -8,7 +8,7 @@ namespace RacingSim.Thermal
     /// Tire thermal model with 3 zones (inner, middle, outer)
     /// Implements: dT/dt = (Q_in - Q_out) / (m × c)
     /// </summary>
-    [BurstCompile]
+
     public static class TireThermalModel
     {
         /// <summary>
@@ -179,7 +179,7 @@ namespace RacingSim.Thermal
         /// Calculate tire pressure change due to temperature
         /// P/T = constant (ideal gas law, simplified)
         /// </summary>
-        [BurstCompile]
+
         public static float CalculatePressureChange(
             float initialPressure,
             float initialTemp,
@@ -204,7 +204,7 @@ namespace RacingSim.Thermal
     /// Brake thermal model
     /// Implements: dT/dt = (τ×ω - h×A×ΔT - ε×σ×A×(T⁴-T_amb⁴)) / (m×c)
     /// </summary>
-    [BurstCompile]
+
     public static class BrakeThermalModel
     {
         /// <summary>
@@ -321,7 +321,7 @@ namespace RacingSim.Thermal
         /// <summary>
         /// Check for brake fluid boil
         /// </summary>
-        [BurstCompile]
+
         public static bool CheckFluidBoil(float brakeTemp, float dotRating)
         {
             // DOT ratings have different boiling points
@@ -340,7 +340,7 @@ namespace RacingSim.Thermal
     /// <summary>
     /// Engine/oil thermal model (simplified lumped capacitance)
     /// </summary>
-    [BurstCompile]
+
     public static class EngineThermalModel
     {
         /// <summary>

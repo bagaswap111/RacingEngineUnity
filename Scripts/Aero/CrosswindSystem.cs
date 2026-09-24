@@ -7,10 +7,10 @@ namespace RacingSim.Aero
     /// Crosswind simulation with mean wind, gusts, and turbulence.
     /// Calculates side force and yaw moment from wind.
     /// </summary>
-    [BurstCompile]
+
     public static class CrosswindSystem
     {
-        [BurstCompile]
+
         public static CrosswindResult Calculate(
             in float3 vehiclePosition,
             in float3 vehicleVelocity,
@@ -58,7 +58,6 @@ namespace RacingSim.Aero
             return result;
         }
 
-        [BurstCompile]
         public static float3 GetWindDirection(float windHeadingDeg)
         {
             float rad = math.radians(windHeadingDeg);

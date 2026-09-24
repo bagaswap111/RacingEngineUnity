@@ -15,7 +15,7 @@ namespace RacingSim.Core
     /// 5. Penetration Recovery — push objects apart
     /// 6. Fallback State — rollback ring buffer
     /// </summary>
-    [BurstCompile]
+
     public static class NumericalStability
     {
         public const float MAX_VELOCITY = 150f;
@@ -25,33 +25,28 @@ namespace RacingSim.Core
         public const float MIN_SPEED_FOR_DIVISION = 0.1f;
         public const float NaN_CHECK_EPSILON = 1e-10f;
 
-        [BurstCompile]
         public static bool IsFinite(float value)
         {
             return !math.isnan(value) && !math.isinf(value);
         }
 
-        [BurstCompile]
         public static bool IsFinite(in float3 value)
         {
             return IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z);
         }
 
-        [BurstCompile]
         public static bool IsFinite(in quaternion q)
         {
             return IsFinite(q.value.x) && IsFinite(q.value.y) &&
                    IsFinite(q.value.z) && IsFinite(q.value.w);
         }
 
-        [BurstCompile]
         public static float ClampForce(float force, float maxForce = MAX_FORCE)
         {
             if (!IsFinite(force)) return 0f;
             return math.clamp(force, -maxForce, maxForce);
         }
 
-        [BurstCompile]
         public static float3 ClampForce(in float3 force, float maxForce = MAX_FORCE)
         {
             if (!IsFinite(force)) return float3.zero;
@@ -61,7 +56,6 @@ namespace RacingSim.Core
             return force;
         }
 
-        [BurstCompile]
         public static float3 ClampVelocity(in float3 velocity)
         {
             if (!IsFinite(velocity)) return float3.zero;
@@ -71,7 +65,6 @@ namespace RacingSim.Core
             return velocity;
         }
 
-        [BurstCompile]
         public static float3 ClampAngularVelocity(in float3 angularVelocity)
         {
             if (!IsFinite(angularVelocity)) return float3.zero;
@@ -81,7 +74,6 @@ namespace RacingSim.Core
             return angularVelocity;
         }
 
-        [BurstCompile]
         public static quaternion NormalizeSafe(in quaternion q)
         {
             float len = math.length(q.value);
@@ -90,7 +82,6 @@ namespace RacingSim.Core
             return new quaternion(q.value / len);
         }
 
-        [BurstCompile]
         public static float SafeDivide(float numerator, float denominator, float fallback = 0f)
         {
             if (math.abs(denominator) < NaN_CHECK_EPSILON)
@@ -99,7 +90,6 @@ namespace RacingSim.Core
             return IsFinite(result) ? result : fallback;
         }
 
-        [BurstCompile]
         public static float3 SafeNormalize(in float3 v, in float3 fallback)
         {
             float len = math.length(v);
@@ -108,7 +98,6 @@ namespace RacingSim.Core
             return v / len;
         }
 
-        [BurstCompile]
         public static float SafeSqrt(float value)
         {
             if (value < 0f) return 0f;
@@ -116,7 +105,6 @@ namespace RacingSim.Core
             return IsFinite(result) ? result : 0f;
         }
 
-        [BurstCompile]
         public static float SafeAtan2(float y, float x)
         {
             if (math.abs(x) < NaN_CHECK_EPSILON && math.abs(y) < NaN_CHECK_EPSILON)
@@ -124,7 +112,6 @@ namespace RacingSim.Core
             return math.atan2(y, x);
         }
 
-        [BurstCompile]
         public static float ForceDamageCheck(
             in float3 force,
             in float3 position,
@@ -134,7 +121,6 @@ namespace RacingSim.Core
             return SafeDivide(torque, MAX_TORQUE, 0f);
         }
 
-        [BurstCompile]
         public static float PenetrationDepth(
             in float3 position,
             float groundHeight,
@@ -146,7 +132,6 @@ namespace RacingSim.Core
             return 0f;
         }
 
-        [BurstCompile]
         public static float3 PenetrationCorrection(
             in float3 position,
             float groundHeight,

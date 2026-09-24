@@ -39,7 +39,7 @@ namespace RacingSim.Aero
     /// Aerodynamics simulation with drag, downforce, and side forces
     /// Implements: F = 0.5 × ρ × V² × C × A
     /// </summary>
-    [BurstCompile]
+
     public static class AeroSim
     {
         /// <summary>
@@ -251,7 +251,7 @@ namespace RacingSim.Aero
         /// ρ = ρ₀ × (1 - L×h/T₀)^(g×M/(R×L))
         /// Simplified: linear approximation
         /// </summary>
-        [BurstCompile]
+
         private static float GetAirDensity(float altitude)
         {
             // Simplified barometric formula

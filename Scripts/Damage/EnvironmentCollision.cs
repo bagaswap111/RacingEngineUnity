@@ -37,7 +37,6 @@ namespace RacingSim.Damage
         Sand
     }
 
-    [BurstCompile]
     public struct SurfaceConfig
     {
         public float Restitution;

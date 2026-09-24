@@ -20,7 +20,7 @@ namespace RacingSim.Drivetrain
     ///   I_1 × ω̇_1 = τ_engine - k × (θ_1 - θ_2) - c × (ω_1 - ω_2)
     ///   I_2 × ω̇_2 = k × (θ_1 - θ_2) + c × (ω_1 - ω_2) - τ_load
     /// </summary>
-    [BurstCompile]
+
     public struct DrivelineConfig
     {
         public float EngineInertia;
@@ -44,7 +44,6 @@ namespace RacingSim.Drivetrain
         }
     }
 
-    [BurstCompile]
     public struct DrivelineState
     {
         public float EngineAngle;
@@ -56,10 +55,9 @@ namespace RacingSim.Drivetrain
         public float VerticalReactionForce;
     }
 
-    [BurstCompile]
     public static class DrivelineOscillation
     {
-        [BurstCompile]
+
         public static DrivelineState Update(
             in DrivelineState state,
             in DrivelineConfig config,
@@ -92,7 +90,6 @@ namespace RacingSim.Drivetrain
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateWheelHopFrequency(in DrivelineConfig config)
         {
             float effectiveInertia = (config.EngineInertia * config.WheelInertia)
@@ -100,7 +97,6 @@ namespace RacingSim.Drivetrain
             return math.sqrt(config.DrivelineStiffness / effectiveInertia) / (2f * math.PI);
         }
 
-        [BurstCompile]
         public static float CalculateDrivelineDampingRatio(in DrivelineConfig config)
         {
             float effectiveInertia = (config.EngineInertia * config.WheelInertia)
@@ -109,7 +105,6 @@ namespace RacingSim.Drivetrain
             return config.DrivelineDamping / criticalDamping;
         }
 
-        [BurstCompile]
         public static float CalculateVerticalReaction(
             float drivelineTorque,
             float driveshaftAngle,

@@ -7,10 +7,10 @@ namespace RacingSim.Physics
     /// Force models for suspension: spring, damper (4-way), ARB, bump stop, droop stop.
     /// All calculations in native C# for performance.
     /// </summary>
-    [BurstCompile]
+
     public static class SuspensionForces
     {
-        [BurstCompile]
+
         public static float CalculateSpringForce(
             float travel,
             float springRate,
@@ -34,7 +34,6 @@ namespace RacingSim.Physics
             return force * motionRatio;
         }
 
-        [BurstCompile]
         public static float CalculateDamperForce(
             float travelVelocity,
             in DamperConfig config,
@@ -92,7 +91,6 @@ namespace RacingSim.Physics
             return force * direction * config.MotionRatio;
         }
 
-        [BurstCompile]
         public static float CalculateARBForce(
             float travel,
             float oppositeTravel,
@@ -104,7 +102,6 @@ namespace RacingSim.Physics
             return arbRate * travelDiff * arbRatio + arbPreload;
         }
 
-        [BurstCompile]
         public static float CalculateBumpStopForce(
             float travel,
             float engageTravel,
@@ -121,7 +118,6 @@ namespace RacingSim.Physics
             return stiffness * math.pow(ratio, exponent) * maxLength;
         }
 
-        [BurstCompile]
         public static float CalculateDroopStopForce(
             float travel,
             float maxDroopTravel,
@@ -133,7 +129,6 @@ namespace RacingSim.Physics
             return -stiffness * extension;
         }
 
-        [BurstCompile]
         public static float CalculateTotalForce(
             float springForce,
             float damperForce,
@@ -144,7 +139,6 @@ namespace RacingSim.Physics
             return springForce + damperForce + arbForce + bumpStopForce + droopStopForce;
         }
 
-        [BurstCompile]
         public static float CalculateWheelRate(
             float springRate,
             float motionRatio)

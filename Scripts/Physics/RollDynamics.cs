@@ -8,12 +8,11 @@ namespace RacingSim.Physics
     /// Handles body roll, geometric vs elastic load transfer,
     /// and roll center migration.
     /// </summary>
-    [BurstCompile]
+
     public static class RollDynamics
     {
         private const float GRAVITY = 9.81f;
 
-        [BurstCompile]
         public static float CalculateRollAngle(
             float lateralAcceleration,
             float vehicleMass,
@@ -24,7 +23,6 @@ namespace RacingSim.Physics
             return (vehicleMass * lateralAcceleration * cgHeight) / totalRollStiffness;
         }
 
-        [BurstCompile]
         public static float CalculateDynamicRoll(
             float currentRollAngle,
             float currentRollVelocity,
@@ -47,7 +45,6 @@ namespace RacingSim.Physics
             return newAngle;
         }
 
-        [BurstCompile]
         public static float CalculateRollStiffnessFront(
             float springRateFL,
             float springRateFR,
@@ -60,7 +57,6 @@ namespace RacingSim.Physics
             return kSuspension + kArb;
         }
 
-        [BurstCompile]
         public static float CalculateRollStiffnessRear(
             float springRateRL,
             float springRateRR,
@@ -73,7 +69,6 @@ namespace RacingSim.Physics
             return kSuspension + kArb;
         }
 
-        [BurstCompile]
         public static LoadTransferResult CalculateLoadTransfer(
             float vehicleMass,
             float longitudinalAccel,
@@ -117,7 +112,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateRollDistribution(
             float rollStiffnessFront,
             float rollStiffnessRear)
@@ -127,7 +121,6 @@ namespace RacingSim.Physics
             return rollStiffnessFront / total;
         }
 
-        [BurstCompile]
         public static float GetLoadPerWheel(
             float staticWeight,
             float longTransfer,

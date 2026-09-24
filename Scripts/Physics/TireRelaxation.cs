@@ -23,7 +23,7 @@ namespace RacingSim.Physics
     /// This prevents "twitchy" tire behavior and creates
     /// the smooth grip build-up felt in real racing.
     /// </summary>
-    [BurstCompile]
+
     public struct TireRelaxation
     {
         public float RelaxationLength;
@@ -40,7 +40,6 @@ namespace RacingSim.Physics
             };
         }
 
-        [BurstCompile]
         public void Update(
             in float3 steadyStateForce,
             float steadyStateTorque,
@@ -57,7 +56,6 @@ namespace RacingSim.Physics
             TorqueSmoothed = math.lerp(TorqueSmoothed, steadyStateTorque, alpha);
         }
 
-        [BurstCompile]
         public void Reset()
         {
             ForceSmoothed = float3.zero;
@@ -69,7 +67,7 @@ namespace RacingSim.Physics
     /// Per-wheel tire relaxation state.
     /// Stores smoothed Fx, Fy, Fz, Mz separately for independent relaxation.
     /// </summary>
-    [BurstCompile]
+
     public struct WheelTireRelaxation
     {
         public TireRelaxation Lateral;
@@ -86,7 +84,6 @@ namespace RacingSim.Physics
             };
         }
 
-        [BurstCompile]
         public void Update(
             in float3 steadyStateForce,
             float steadyStateTorque,
@@ -106,7 +103,6 @@ namespace RacingSim.Physics
                 steadyStateTorque, forwardSpeed, dt);
         }
 
-        [BurstCompile]
         public float3 GetTotalForce()
         {
             return new float3(
@@ -115,13 +111,11 @@ namespace RacingSim.Physics
                 0f);
         }
 
-        [BurstCompile]
         public float GetAligningTorque()
         {
             return Aligning.TorqueSmoothed;
         }
 
-        [BurstCompile]
         public void Reset()
         {
             Lateral.Reset();

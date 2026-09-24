@@ -8,13 +8,12 @@ namespace RacingSim.Physics
     /// Simulates rubber bushing deflection at pivot points,
     /// affecting camber and toe under load.
     /// </summary>
-    [BurstCompile]
+
     public static class BushingCompliance
     {
         private const float CAMBER_COMPLIANCE_FACTOR = 0.02f;
         private const float TOE_COMPLIANCE_FACTOR = 0.015f;
 
-        [BurstCompile]
         public static float3 CalculateDeflection(
             float lateralForce,
             float longitudinalForce,
@@ -37,7 +36,6 @@ namespace RacingSim.Physics
             return new float3(radialDeflection, 0f, axialDeflection);
         }
 
-        [BurstCompile]
         public static float CalculateCamberCompliance(
             float lateralForce,
             float radialStiffness,
@@ -49,7 +47,6 @@ namespace RacingSim.Physics
             return deflection * CAMBER_COMPLIANCE_FACTOR * complianceFactor;
         }
 
-        [BurstCompile]
         public static float CalculateToeCompliance(
             float longitudinalForce,
             float axialStiffness,
@@ -61,7 +58,6 @@ namespace RacingSim.Physics
             return deflection * TOE_COMPLIANCE_FACTOR * complianceFactor;
         }
 
-        [BurstCompile]
         public static float ApplyHysteresis(
             float currentDeflection,
             float previousDeflection,
@@ -85,7 +81,6 @@ namespace RacingSim.Physics
             return math.lerp(currentDeflection, targetDeflection, 0.1f);
         }
 
-        [BurstCompile]
         public static void ApplyCompliance(
             ref float camber,
             ref float toe,

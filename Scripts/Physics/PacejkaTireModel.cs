@@ -69,7 +69,7 @@ namespace RacingSim.Physics
     /// Menggunakan koefisien load-dependent untuk akurasi tinggi.
     /// Optimized dengan Burst Compiler untuk performa.
     /// </summary>
-    [BurstCompile]
+
     public static class PacejkaTireModel
     {
         /// <summary>
@@ -80,7 +80,7 @@ namespace RacingSim.Physics
         /// <param name="camber">Camber angle (radian)</param>
         /// <param name="coeff">Koefisien Pacejka</param>
         /// <returns>Gaya lateral Fy (Newton)</returns>
-        [BurstCompile]
+
         public static float CalculateLateralForce(float slipAngle, float fz, float camber, in TireCoefficients coeff)
         {
             if (fz <= 0f) return 0f;
@@ -137,7 +137,7 @@ namespace RacingSim.Physics
         /// <param name="fz">Beban vertikal (Newton), harus >= 0</param>
         /// <param name="coeff">Koefisien Pacejka</param>
         /// <returns>Gaya longitudinal Fx (Newton)</returns>
-        [BurstCompile]
+
         public static float CalculateLongitudinalForce(float slipRatio, float fz, in TireCoefficients coeff)
         {
             if (fz <= 0f) return 0f;
@@ -193,7 +193,7 @@ namespace RacingSim.Physics
         /// <param name="gripMultiplier">Grip multiplier (thermal, wear)</param>
         /// <param name="coeff">Koefisien Pacejka</param>
         /// <returns>Tuple (Fx, Fy, Mz) dalam Newton dan Nm</returns>
-        [BurstCompile]
+
         public static TireForceResult CalculateCombinedForces(
             float slipAngle, 
             float slipRatio, 
@@ -272,7 +272,6 @@ namespace RacingSim.Physics
             };
         }
 
-        [BurstCompile]
         public static TireForceResult CalculateCombinedForces(
             float slipAngle,
             float slipRatio,
@@ -333,7 +332,7 @@ namespace RacingSim.Physics
         /// <param name="tireTemp">Suhu ban saat ini (°C)</param>
         /// <param name="coeff">Koefisien Pacejka dengan info suhu optimal</param>
         /// <returns>Multiplier grip (0.5 - 1.2)</returns>
-        [BurstCompile]
+
         public static float CalculateTemperatureMultiplier(float tireTemp, in TireCoefficients coeff)
         {
             float tempDiff = tireTemp - coeff.tempOptimal;
@@ -354,7 +353,7 @@ namespace RacingSim.Physics
         /// </summary>
         /// <param name="wear">Keausan ban (0 = baru, 1 = habis)</param>
         /// <returns>Multiplier grip (0.6 - 1.0)</returns>
-        [BurstCompile]
+
         public static float CalculateWearMultiplier(float wear)
         {
             wear = math.clamp(wear, 0f, 1f);

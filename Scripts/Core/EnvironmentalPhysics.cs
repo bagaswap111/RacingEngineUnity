@@ -24,7 +24,7 @@ namespace RacingSim.Core
     /// Wind Field:
     ///   wind(x, y, z) = V_mean + V_gust(t) + V_local(x,y,z)
     /// </summary>
-    [BurstCompile]
+
     public struct EnvironmentConfig
     {
         public float Altitude;
@@ -48,7 +48,6 @@ namespace RacingSim.Core
         }
     }
 
-    [BurstCompile]
     public struct EnvironmentState
     {
         public float AirDensity;
@@ -57,14 +56,12 @@ namespace RacingSim.Core
         public float TemperatureCelsius;
     }
 
-    [BurstCompile]
     public static class EnvironmentalPhysics
     {
         public const float R_SPECIFIC = 287.058f;
         public const float GRAVITY = 9.80665f;
         public const float LAPSE_RATE = 0.0065f;
 
-        [BurstCompile]
         public static EnvironmentState Update(
             in EnvironmentConfig config,
             float time)
@@ -89,7 +86,6 @@ namespace RacingSim.Core
             return state;
         }
 
-        [BurstCompile]
         public static float CalculatePressure(float altitude, float tempSeaLevel)
         {
             float tempAtAltitude = tempSeaLevel - LAPSE_RATE * altitude;
@@ -97,13 +93,11 @@ namespace RacingSim.Core
             return 101325f * math.pow(tempRatio, GRAVITY / (R_SPECIFIC * LAPSE_RATE));
         }
 
-        [BurstCompile]
         public static float CalculateDensity(float pressure, float temperature)
         {
             return pressure / (R_SPECIFIC * temperature);
         }
 
-        [BurstCompile]
         public static float CalculateHumidityCorrection(float humidity, float temperature, float pressure)
         {
             float satVaporPressure = 610.78f * math.exp(17.27f * (temperature - 273.15f) / (temperature - 35.86f));
@@ -111,7 +105,6 @@ namespace RacingSim.Core
             return 1f - 0.378f * vaporPressure / pressure;
         }
 
-        [BurstCompile]
         public static float3 CalculateWindAtPosition(
             in float3 position,
             in EnvironmentState env,
@@ -121,7 +114,6 @@ namespace RacingSim.Core
             return env.WindVector * (1f + localVariation);
         }
 
-        [BurstCompile]
         public static float CalculateAltitudeEffect(float altitude)
         {
             float pressure = CalculatePressure(altitude, 288.15f);

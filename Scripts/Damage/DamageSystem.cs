@@ -97,7 +97,7 @@ namespace RacingSim.Damage
         /// Calculate impact energy from collision
         /// E = 0.5 × m_effective × V²
         /// </summary>
-        [BurstCompile]
+
         public static float CalculateImpactEnergy(
             float relativeVelocity,
             float effectiveMass,

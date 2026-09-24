@@ -10,7 +10,7 @@ namespace RacingSim.Physics
     /// Calculates camber, toe, roll center, instant center, motion ratio
     /// based on control arm hardpoints and travel.
     /// </summary>
-    [BurstCompile]
+
     public static class SuspensionKinematics
     {
         private const int SOLVER_ITERATIONS = 5;
@@ -20,7 +20,7 @@ namespace RacingSim.Physics
         /// <summary>
         /// Main solver: compute full suspension state from config and travel.
         /// </summary>
-        [BurstCompile]
+
         public static SuspensionState Solve(
             in SuspensionConfig config,
             float travel,
@@ -78,7 +78,6 @@ namespace RacingSim.Physics
             return state;
         }
 
-        [BurstCompile]
         private static float3 SolveDoubleWishbone(in SuspensionConfig config, float travel)
         {
             float3 basePos = config.LCA_Outboard;
@@ -116,7 +115,6 @@ namespace RacingSim.Physics
             return uprightPos;
         }
 
-        [BurstCompile]
         private static float3 SolveMacPherson(in SuspensionConfig config, float travel)
         {
             float3 strutDir = math.normalize(config.Strut_Top - config.LCA_Outboard);
@@ -128,13 +126,11 @@ namespace RacingSim.Physics
             return math.lerp(basePos, lcaCheck, 0.5f) + new float3(0, travel, 0);
         }
 
-        [BurstCompile]
         private static float3 SolveGeneric(in SuspensionConfig config, float travel)
         {
             return config.LCA_Outboard + new float3(0, travel, 0);
         }
 
-        [BurstCompile]
         private static float3 CalculateWheelNormal(in SuspensionConfig config, in float3 uprightPos)
         {
             float3 steerAxis = math.normalize(config.SteeringAxis_Top - config.SteeringAxis_Bottom);
@@ -142,20 +138,17 @@ namespace RacingSim.Physics
             return math.normalize(math.cross(new float3(0, 1, 0), right));
         }
 
-        [BurstCompile]
         private static float CalculateCamber(in float3 wheelNormal)
         {
             return math.asin(math.clamp(math.dot(wheelNormal, new float3(1, 0, 0)), -1f, 1f));
         }
 
-        [BurstCompile]
         private static float CalculateKPI(in SuspensionConfig config, in float3 uprightPos)
         {
             float3 steerAxis = math.normalize(config.SteeringAxis_Top - config.SteeringAxis_Bottom);
             return math.asin(math.clamp(math.dot(steerAxis, new float3(1, 0, 0)), -1f, 1f));
         }
 
-        [BurstCompile]
         private static float CalculateToe(in SuspensionConfig config, float travel, float steerInput)
         {
             float toeStatic = config.StaticToe * DEG2RAD;
@@ -170,14 +163,12 @@ namespace RacingSim.Physics
             return toeStatic + bumpSteer + steerAngle;
         }
 
-        [BurstCompile]
         private static float CalculateSteeringAngle(in SuspensionConfig config, float steerInput)
         {
             if (!config.IsFrontWheel || config.SteeringRatio <= 0f) return 0f;
             return steerInput / config.SteeringRatio;
         }
 
-        [BurstCompile]
         private static float CalculateAckermann(in SuspensionConfig config, float steerInput)
         {
             if (!config.IsFrontWheel) return 0f;
@@ -188,7 +179,6 @@ namespace RacingSim.Physics
             return ackermann * math.sign(steerInput);
         }
 
-        [BurstCompile]
         private static float2 CalculateInstantCenter(in SuspensionConfig config, in float3 uprightPos)
         {
             float2 ucaStart = new float2(config.UCA_Front.y, config.UCA_Front.z);
@@ -211,7 +201,6 @@ namespace RacingSim.Physics
             return ucaStart + d1 * t;
         }
 
-        [BurstCompile]
         private static float CalculateRollCenter(in SuspensionConfig config, float2 instantCenter)
         {
             float trackHalf = config.TrackWidth * 0.5f;
@@ -226,7 +215,6 @@ namespace RacingSim.Physics
             return rcHeight;
         }
 
-        [BurstCompile]
         private static float CalculateMotionRatio(in SuspensionConfig config, float travel)
         {
             float mr = config.SpringMotionRatio;
@@ -241,13 +229,11 @@ namespace RacingSim.Physics
             return mr;
         }
 
-        [BurstCompile]
         private static float3 CalculateContactPatch(in SuspensionState state)
         {
             return state.HubPosition + new float3(0, -VehicleConstants.DEFAULT_WHEEL_RADIUS, 0);
         }
 
-        [BurstCompile]
         private static float CalculateAntiDive(in SuspensionConfig config)
         {
             float3 frontCP = config.ContactPatch;
@@ -262,7 +248,6 @@ namespace RacingSim.Physics
             return (math.tan(angle) * hCg / wheelbase) * 100f;
         }
 
-        [BurstCompile]
         private static float CalculateAntiSquat(in SuspensionConfig config)
         {
             float3 rearCP = config.ContactPatch;

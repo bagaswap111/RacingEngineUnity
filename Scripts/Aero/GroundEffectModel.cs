@@ -8,10 +8,10 @@ namespace RacingSim.Aero
     /// Calculates additional downforce from venturi effect and diffuser.
     /// Includes pitch sensitivity, yaw degradation, and stall detection.
     /// </summary>
-    [BurstCompile]
+
     public static class GroundEffectModel
     {
-        [BurstCompile]
+
         public static GroundEffectResult Calculate(
             float rideHeightFront,
             float rideHeightRear,
@@ -52,7 +52,6 @@ namespace RacingSim.Aero
             return result;
         }
 
-        [BurstCompile]
         private static float CalculateHeightFactor(float rhNormalized)
         {
             if (rhNormalized > 1.5f)

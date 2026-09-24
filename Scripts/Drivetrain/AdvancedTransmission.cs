@@ -65,7 +65,6 @@ namespace RacingSim.Drivetrain
         Failed
     }
 
-    [BurstCompile]
     public struct TransmissionState
     {
         public int CurrentGear;
@@ -79,10 +78,9 @@ namespace RacingSim.Drivetrain
         public bool ShiftFailed;
     }
 
-    [BurstCompile]
     public static class AdvancedTransmission
     {
-        [BurstCompile]
+
         public static TransmissionState Update(
             in TransmissionState state,
             in TransmissionConfig config,
@@ -110,7 +108,6 @@ namespace RacingSim.Drivetrain
             return result;
         }
 
-        [BurstCompile]
         private static TransmissionState ProcessShift(
             in TransmissionState state,
             in TransmissionConfig config,
@@ -161,7 +158,6 @@ namespace RacingSim.Drivetrain
             return result;
         }
 
-        [BurstCompile]
         public static TransmissionState InitiateShift(
             in TransmissionState state,
             in TransmissionConfig config,
@@ -180,7 +176,6 @@ namespace RacingSim.Drivetrain
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateDrivelineTwist(
             float inputRPM,
             float outputRPM,
@@ -193,7 +188,6 @@ namespace RacingSim.Drivetrain
             return twistForce * dt;
         }
 
-        [BurstCompile]
         public static bool CanEngage(
             in TransmissionState state,
             in TransmissionConfig config)
@@ -202,7 +196,6 @@ namespace RacingSim.Drivetrain
             return rpmDiff < config.EngagementThreshold;
         }
 
-        [BurstCompile]
         public static float CalculateShiftCut(
             float rpm,
             float redlineRPM,

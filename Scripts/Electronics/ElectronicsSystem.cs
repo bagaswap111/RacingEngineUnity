@@ -8,7 +8,7 @@ namespace RacingSim.Electronics
     /// PID Controller for TC, ABS, and other closed-loop systems
     /// Implements: u = Kp·e + Ki·∫e·dt + Kd·de/dt
     /// </summary>
-    [BurstCompile]
+
     public struct PIDController
     {
         public float Kp;  // Proportional gain
@@ -32,7 +32,7 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Calculate PID output
         /// </summary>
-        [BurstCompile]
+
         public float Update(float error, float dt)
         {
             // Proportional term
@@ -55,7 +55,7 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Reset integrator
         /// </summary>
-        [BurstCompile]
+
         public void Reset()
         {
             integralAccumulator = 0f;
@@ -65,7 +65,7 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Set gains
         /// </summary>
-        [BurstCompile]
+
         public void SetGains(float kp, float ki, float kd)
         {
             Kp = kp;
@@ -78,7 +78,7 @@ namespace RacingSim.Electronics
     /// Traction Control System
     /// Reduces engine torque when wheel slip exceeds target
     /// </summary>
-    [BurstCompile]
+
     public static class TractionControl
     {
         /// <summary>
@@ -180,7 +180,7 @@ namespace RacingSim.Electronics
     /// Anti-lock Braking System
     /// Modulates brake pressure to prevent wheel lockup
     /// </summary>
-    [BurstCompile]
+
     public static class ABSSystem
     {
         /// <summary>
@@ -289,7 +289,7 @@ namespace RacingSim.Electronics
     /// Electronic Brakeforce Distribution
     /// Optimizes front/rear brake bias based on conditions
     /// </summary>
-    [BurstCompile]
+
     public static class EBDSytem
     {
         /// <summary>
@@ -331,7 +331,7 @@ namespace RacingSim.Electronics
     /// Launch Control System
     /// Optimizes acceleration from standstill
     /// </summary>
-    [BurstCompile]
+
     public static class LaunchControl
     {
         /// <summary>
@@ -402,7 +402,7 @@ namespace RacingSim.Electronics
     /// <summary>
     /// Shift Light / Rev Warning
     /// </summary>
-    [BurstCompile]
+
     public static class ShiftLightSystem
     {
         /// <summary>

@@ -23,7 +23,7 @@ namespace RacingSim.Physics
     ///   Δsteer = Fy × steeringCompliance
     ///   steeringCompliance ≈ 0.001-0.005 deg/N
     /// </summary>
-    [BurstCompile]
+
     public struct SteeringConfig
     {
         public float SteeringRatio;
@@ -55,7 +55,6 @@ namespace RacingSim.Physics
         }
     }
 
-    [BurstCompile]
     public struct SteeringState
     {
         public float WheelAngle;
@@ -65,10 +64,9 @@ namespace RacingSim.Physics
         public float FrictionTorque;
     }
 
-    [BurstCompile]
     public static class SteeringSystem
     {
-        [BurstCompile]
+
         public static SteeringState Update(
             in SteeringState state,
             in SteeringConfig config,
@@ -104,7 +102,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateSelfAligningTorque(
             float lateralForce,
             float verticalLoad,
@@ -120,7 +117,6 @@ namespace RacingSim.Physics
             return pneumaticTrail + mechanicalTrail;
         }
 
-        [BurstCompile]
         public static float CalculateVariableRatio(
             float steeringAngle,
             float baseRatio,
@@ -129,7 +125,6 @@ namespace RacingSim.Physics
             return baseRatio + ratioGain * math.abs(steeringAngle);
         }
 
-        [BurstCompile]
         public static float CalculateAckermann(
             float steerAngle,
             float wheelbase,

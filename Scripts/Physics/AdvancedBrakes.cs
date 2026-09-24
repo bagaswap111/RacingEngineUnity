@@ -26,7 +26,7 @@ namespace RacingSim.Physics
     /// Brake Fluid Boiling:
     ///   IF T > T_fluid_boil: F_brake *= 0.3
     /// </summary>
-    [BurstCompile]
+
     public struct AdvancedBrakeConfig
     {
         public float DiscRadius;
@@ -68,7 +68,6 @@ namespace RacingSim.Physics
         }
     }
 
-    [BurstCompile]
     public struct AdvancedBrakeState
     {
         public float Temperature;
@@ -81,10 +80,9 @@ namespace RacingSim.Physics
         public float DynamicBias;
     }
 
-    [BurstCompile]
     public static class AdvancedBrakes
     {
-        [BurstCompile]
+
         public static AdvancedBrakeState Update(
             in AdvancedBrakeState state,
             in AdvancedBrakeConfig config,
@@ -121,7 +119,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         private static float CalculateFrictionCoefficient(float temperature)
         {
             if (temperature < 100f) return 0.30f;
@@ -131,7 +128,6 @@ namespace RacingSim.Physics
             return 0.30f;
         }
 
-        [BurstCompile]
         private static float CalculateFadeFactor(float temperature, in AdvancedBrakeConfig config)
         {
             if (temperature < config.FadeStartTemp)
@@ -142,7 +138,6 @@ namespace RacingSim.Physics
             return math.clamp(fade, 0.2f, 1.0f);
         }
 
-        [BurstCompile]
         private static float CalculateWarp(
             float currentWarp,
             float temperature,
@@ -155,7 +150,6 @@ namespace RacingSim.Physics
             return currentWarp + config.WarpRate * dt;
         }
 
-        [BurstCompile]
         public static float CalculatePulsation(
             float warpAmount,
             float wheelAngle,
@@ -164,7 +158,6 @@ namespace RacingSim.Physics
             return warpAmount * math.sin(wheelAngle * discOrder);
         }
 
-        [BurstCompile]
         public static float CalculateBrakeBias(
             float staticBias,
             float loadTransfer,

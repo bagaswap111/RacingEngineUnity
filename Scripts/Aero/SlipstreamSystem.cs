@@ -75,7 +75,6 @@ namespace RacingSim.Aero
             return result;
         }
 
-        [BurstCompile]
         public static float3 CalculateTurbulenceForce(
             float turbulenceIntensity,
             float dynamicPressure,

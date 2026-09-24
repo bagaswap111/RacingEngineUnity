@@ -26,7 +26,7 @@ namespace RacingSim.Drivetrain
     /// Rev Limiter:
     ///   IF RPM > RPM_redline: fuel_cut = true, τ_engine = 0
     /// </summary>
-    [BurstCompile]
+
     public struct AdvancedEngineConfig
     {
         public float Displacement;
@@ -60,7 +60,6 @@ namespace RacingSim.Drivetrain
         }
     }
 
-    [BurstCompile]
     public struct TurboConfig
     {
         public bool HasTurbo;
@@ -86,7 +85,6 @@ namespace RacingSim.Drivetrain
         }
     }
 
-    [BurstCompile]
     public struct EngineState
     {
         public float RPM;
@@ -99,12 +97,10 @@ namespace RacingSim.Drivetrain
         public bool AntiLagActive;
     }
 
-    [BurstCompile]
     public static class AdvancedEngine
     {
         public const float RPM_TO_RADS = 0.10472f;
 
-        [BurstCompile]
         public static EngineState Update(
             in EngineState state,
             in AdvancedEngineConfig config,
@@ -181,7 +177,6 @@ namespace RacingSim.Drivetrain
             return result;
         }
 
-        [BurstCompile]
         private static float CalculateNATorque(float rpmNorm, float displacement)
         {
             float peakTorque = displacement * 1000f;
@@ -189,7 +184,6 @@ namespace RacingSim.Drivetrain
             return peakTorque * math.max(0f, torqueCurve);
         }
 
-        [BurstCompile]
         private static float CalculateEngineBraking(float rpm, in AdvancedEngineConfig config)
         {
             float rpmNorm = rpm / config.RedlineRPM;
@@ -199,7 +193,6 @@ namespace RacingSim.Drivetrain
             return compressionBrake + frictionBrake + pumpingBrake;
         }
 
-        [BurstCompile]
         public static float CalculateIdleControl(
             float currentRPM,
             float targetRPM,
@@ -213,7 +206,6 @@ namespace RacingSim.Drivetrain
             return math.clamp(idleThrottle, 0f, 0.3f);
         }
 
-        [BurstCompile]
         public static float CalculateRevMatch(
             float currentRPM,
             float targetRPM,

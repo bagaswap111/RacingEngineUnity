@@ -21,7 +21,7 @@ namespace RacingSim.Damage
     /// Anti-tunneling:
     ///   At high speed (> 200 km/h), CCD or sub-stepping needed.
     /// </summary>
-    [BurstCompile]
+
     public struct CollisionConfig
     {
         public float Restitution;

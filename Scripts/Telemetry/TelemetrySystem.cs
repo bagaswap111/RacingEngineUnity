@@ -12,7 +12,7 @@ namespace RacingSim.Telemetry
     /// Complete telemetry frame for one simulation tick
     /// Optimized for binary serialization and UDP transmission
     /// </summary>
-    [BurstCompile]
+
     public struct TelemetryFrame
     {
         // Header
@@ -290,7 +290,7 @@ namespace RacingSim.Telemetry
     /// <summary>
     /// Lap timing system with sector tracking
     /// </summary>
-    [BurstCompile]
+
     public static class LapTimingSystem
     {
         private struct SectorTrigger
@@ -303,7 +303,7 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Check if vehicle crossed start/finish line
         /// </summary>
-        [BurstCompile]
+
         public static bool CheckStartFinishCrossing(
             in float3 previousPosition,
             in float3 currentPosition,
@@ -329,7 +329,7 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Check sector crossing
         /// </summary>
-        [BurstCompile]
+
         public static bool CheckSectorCrossing(
             in float3 currentPosition,
             in float3 sectorPosition,
@@ -352,7 +352,7 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Calculate lap time delta to reference lap
         /// </summary>
-        [BurstCompile]
+
         public static float CalculateDelta(
             float currentLapTime,
             float referenceLapTimeAtSamePoint,
@@ -366,7 +366,7 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Validate lap (no shortcuts, correct direction)
         /// </summary>
-        [BurstCompile]
+
         public static bool ValidateLap(
             int sectorsCrossed,
             float minimumLapTime,
@@ -385,7 +385,7 @@ namespace RacingSim.Telemetry
     /// In-game HUD data extractor
     /// Provides formatted data for UI display
     /// </summary>
-    [BurstCompile]
+
     public static class HUDDataProvider
     {
         /// <summary>

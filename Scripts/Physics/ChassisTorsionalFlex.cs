@@ -22,7 +22,7 @@ namespace RacingSim.Physics
     ///   camber_actual += flex_offset × camberFlexFactor
     ///   toe_actual += flex_offset × toeFlexFactor
     /// </summary>
-    [BurstCompile]
+
     public struct ChassisFlexConfig
     {
         public float TorsionalStiffness;
@@ -44,7 +44,6 @@ namespace RacingSim.Physics
         }
     }
 
-    [BurstCompile]
     public struct ChassisFlexState
     {
         public float TorsionAngle;
@@ -53,10 +52,9 @@ namespace RacingSim.Physics
         public float ToeOffset;
     }
 
-    [BurstCompile]
     public static class ChassisTorsionalFlex
     {
-        [BurstCompile]
+
         public static ChassisFlexState Update(
             in ChassisFlexState state,
             in ChassisFlexConfig config,
@@ -84,7 +82,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateEffectiveSpringRate(
             float baseSpringRate,
             in ChassisFlexConfig config)
@@ -94,7 +91,6 @@ namespace RacingSim.Physics
             return 1f / effectiveCompliance;
         }
 
-        [BurstCompile]
         public static float CalculateChassisFrequency(
             in ChassisFlexConfig config,
             float vehicleMass)

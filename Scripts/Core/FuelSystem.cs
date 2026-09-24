@@ -22,7 +22,7 @@ namespace RacingSim.Core
     ///     IF fuel_level < starvation_threshold:
     ///       fuel_starved = true, engine_torque = 0
     /// </summary>
-    [BurstCompile]
+
     public struct FuelSystemConfig
     {
         public float TankCapacity;
@@ -50,7 +50,6 @@ namespace RacingSim.Core
         }
     }
 
-    [BurstCompile]
     public struct FuelSystemState
     {
         public float FuelLevel;
@@ -60,10 +59,9 @@ namespace RacingSim.Core
         public float TotalMass;
     }
 
-    [BurstCompile]
     public static class FuelSystem
     {
-        [BurstCompile]
+
         public static FuelSystemState Update(
             in FuelSystemState state,
             in FuelSystemConfig config,
@@ -101,13 +99,11 @@ namespace RacingSim.Core
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateFuelMass(float volumeLiters, float density)
         {
             return volumeLiters * density;
         }
 
-        [BurstCompile]
         public static float CalculateConsumptionRate(
             float throttle,
             float rpm,
@@ -116,7 +112,6 @@ namespace RacingSim.Core
             return baseConsumption * (0.3f + throttle * 0.7f) * (rpm / 10000f);
         }
 
-        [BurstCompile]
         public static float3 CalculateCoGShift(
             in float3 fuelPosition,
             float fuelMass,

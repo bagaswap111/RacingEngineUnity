@@ -21,7 +21,7 @@ namespace RacingSim.Core
     ///   Racing line gets grippier over session.
     ///   Off-line stays at base grip.
     /// </summary>
-    [BurstCompile]
+
     public struct TrackTempConfig
     {
         public float AmbientTemperature;
@@ -51,7 +51,6 @@ namespace RacingSim.Core
         }
     }
 
-    [BurstCompile]
     public struct TrackTempState
     {
         public float SurfaceTemperature;
@@ -60,10 +59,9 @@ namespace RacingSim.Core
         public bool IsRaining;
     }
 
-    [BurstCompile]
     public static class TrackTemperature
     {
-        [BurstCompile]
+
         public static TrackTempState Update(
             in TrackTempState state,
             in TrackTempConfig config,
@@ -98,7 +96,6 @@ namespace RacingSim.Core
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateGripFromTemperature(
             float surfaceTemp,
             float optimalTemp,
@@ -108,7 +105,6 @@ namespace RacingSim.Core
             return 1f - tempDiff * sensitivity;
         }
 
-        [BurstCompile]
         public static float CalculateRubberGrip(
             float rubberLevel,
             float gripGain)
@@ -116,7 +112,6 @@ namespace RacingSim.Core
             return 1f + rubberLevel * gripGain;
         }
 
-        [BurstCompile]
         public static float CalculateWetGripPenalty(
             float rainIntensity,
             float wetGripFactor)

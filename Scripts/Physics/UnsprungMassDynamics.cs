@@ -24,7 +24,7 @@ namespace RacingSim.Physics
     ///   k_tire ≈ 200-400 N/mm (tire vertical stiffness)
     ///   c_tire ≈ 5-15 N·s/mm (tire damping)
     /// </summary>
-    [BurstCompile]
+
     public struct UnsprungMassState
     {
         public float WheelPosition;
@@ -34,7 +34,6 @@ namespace RacingSim.Physics
         public bool IsGrounded;
     }
 
-    [BurstCompile]
     public struct UnsprungMassConfig
     {
         public float Mass;
@@ -56,12 +55,10 @@ namespace RacingSim.Physics
         }
     }
 
-    [BurstCompile]
     public static class UnsprungMassDynamics
     {
         public const float GRAVITY = 9.81f;
 
-        [BurstCompile]
         public static UnsprungMassState Update(
             in UnsprungMassState state,
             in UnsprungMassConfig config,
@@ -106,7 +103,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateWheelHopFrequency(
             in UnsprungMassConfig config,
             float sprungMass,
@@ -117,7 +113,6 @@ namespace RacingSim.Physics
             return freq;
         }
 
-        [BurstCompile]
         public static float CalculateWheelHopDampingRatio(
             in UnsprungMassConfig config,
             float damperRate)

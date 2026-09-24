@@ -19,7 +19,7 @@ namespace RacingSim.Physics
     ///   P_tire → 0 over 1-3 seconds
     ///   grip → 10-20% of normal
     /// </summary>
-    [BurstCompile]
+
     public struct TirePressureConfig
     {
         public float ColdPressure;
@@ -43,7 +43,6 @@ namespace RacingSim.Physics
         }
     }
 
-    [BurstCompile]
     public struct TirePressureState
     {
         public float Pressure;
@@ -54,10 +53,9 @@ namespace RacingSim.Physics
         public float PunctureTimer;
     }
 
-    [BurstCompile]
     public static class TirePressureDynamics
     {
-        [BurstCompile]
+
         public static TirePressureState Update(
             in TirePressureState state,
             in TirePressureConfig config,
@@ -90,7 +88,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         public static TirePressureState CreatePuncture(
             in TirePressureState state,
             in TirePressureConfig config)
@@ -101,7 +98,6 @@ namespace RacingSim.Physics
             return result;
         }
 
-        [BurstCompile]
         public static float CalculatePressureEffect(
             float currentPressure,
             float referencePressure)

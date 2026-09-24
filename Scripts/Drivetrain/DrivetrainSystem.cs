@@ -45,7 +45,7 @@ namespace RacingSim.Drivetrain
     /// Engine simulation with torque curve, inertia, friction, and damage effects
     /// Implements: τ_engine = τ_base(RPM) × throttle_map × f_damage × f_temp
     /// </summary>
-    [BurstCompile]
+
     public static class EngineSim
     {
         /// <summary>
@@ -113,7 +113,7 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Interpolate torque from curve using linear interpolation
         /// </summary>
-        [BurstCompile]
+
         private static float GetTorqueFromCurve(float rpm, NativeSlice<TorqueCurvePoint> curve)
         {
             if (curve.Length == 0) return 0f;
@@ -205,7 +205,7 @@ namespace RacingSim.Drivetrain
     /// Clutch simulation with engagement, slipping, and lockup states
     /// τ_clutch = μ_clutch × F_clutch × R_clutch × sign(ω_engine - ω_input)
     /// </summary>
-    [BurstCompile]
+
     public static class ClutchSim
     {
         /// <summary>
@@ -279,7 +279,7 @@ namespace RacingSim.Drivetrain
     /// <summary>
     /// Gearbox simulation with gear ratios, shift time, and efficiency
     /// </summary>
-    [BurstCompile]
+
     public static class GearboxSim
     {
         /// <summary>
@@ -384,7 +384,7 @@ namespace RacingSim.Drivetrain
     /// <summary>
     /// Differential simulation supporting Open, LSD, Viscous, and Torsen types
     /// </summary>
-    [BurstCompile]
+
     public static class DifferentialSim
     {
         /// <summary>
@@ -420,7 +420,7 @@ namespace RacingSim.Drivetrain
         /// Open differential: equal torque split
         /// τ_left = τ_right = τ_input / 2
         /// </summary>
-        [BurstCompile]
+
         private static DiffTorqueSplit CalculateOpenDiff(
             float inputTorque,
             float omegaLeft,
@@ -577,7 +577,7 @@ namespace RacingSim.Drivetrain
     /// Main drivetrain simulation class
     /// Integrates engine, clutch, gearbox, and differential
     /// </summary>
-    [BurstCompile]
+
     public static class DrivetrainSystem
     {
         /// <summary>
@@ -803,7 +803,7 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Get average wheel omega for driven wheels
         /// </summary>
-        [BurstCompile]
+
         private static float GetWheelOmegaAverage(in DrivetrainState state)
         {
             // Simplified average - would need to know which wheels are driven

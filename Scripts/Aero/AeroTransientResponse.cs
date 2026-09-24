@@ -18,7 +18,7 @@ namespace RacingSim.Aero
     ///   Ground effect: τ ≈ 0.15 s
     ///   Diffuser: τ ≈ 0.20 s
     /// </summary>
-    [BurstCompile]
+
     public struct AeroTransientConfig
     {
         public float FrontWingTau;
@@ -38,7 +38,6 @@ namespace RacingSim.Aero
         }
     }
 
-    [BurstCompile]
     public struct AeroTransientState
     {
         public float FrontDownforceActual;
@@ -47,10 +46,9 @@ namespace RacingSim.Aero
         public float DiffuserActual;
     }
 
-    [BurstCompile]
     public static class AeroTransientResponse
     {
-        [BurstCompile]
+
         public static AeroTransientState Update(
             in AeroTransientState state,
             in AeroTransientConfig config,
@@ -76,7 +74,6 @@ namespace RacingSim.Aero
             return result;
         }
 
-        [BurstCompile]
         private static float SmoothToward(float current, float target, float tau, float dt)
         {
             if (tau < 0.001f)
@@ -86,7 +83,6 @@ namespace RacingSim.Aero
             return math.lerp(current, target, math.clamp(alpha, 0f, 1f));
         }
 
-        [BurstCompile]
         public static float CalculateTransientLoss(
             float steadyStateForce,
             float actualForce)
@@ -96,7 +92,6 @@ namespace RacingSim.Aero
             return 1f - (actualForce / steadyStateForce);
         }
 
-        [BurstCompile]
         public static float CalculateOscillationRisk(
             float rideHeightChange,
             float speed,
