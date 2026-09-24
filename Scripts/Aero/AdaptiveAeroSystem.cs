@@ -102,7 +102,7 @@ namespace RacingSim.Aero
 
             quaternion vehicleRot = transform.rotation;
             float3 localVel = math.mul(math.inverse(vehicleRot), relVelocity);
-            float yawAngle = math.atan2(localVel.z, math.abs(localVel.x));
+            float yawAngle = math.atan2(localVel.z, localVel.x);
 
             float q = 0.5f * config.AirDensitySeaLevel * speed * speed;
 

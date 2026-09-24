@@ -110,7 +110,6 @@ namespace RacingSim.Damage
         }
     }
 
-    [BurstCompile]
     public struct EnvironmentCollisionResult
     {
         public float3 NormalForce;
@@ -120,10 +119,8 @@ namespace RacingSim.Damage
         public bool Collided;
     }
 
-    [BurstCompile]
     public static class EnvironmentCollision
     {
-        [BurstCompile]
         public static EnvironmentCollisionResult ResolveWallCollision(
             float3 velocity,
             float3 angularVelocity,
@@ -160,7 +157,6 @@ namespace RacingSim.Damage
             return result;
         }
 
-        [BurstCompile]
         public static float CalculateKerbForce(
             float wheelPosition,
             float kerbHeight,
@@ -179,7 +175,6 @@ namespace RacingSim.Damage
             return kerbForce;
         }
 
-        [BurstCompile]
         public static float CalculateGravelDrag(
             float speed,
             float verticalLoad,
@@ -190,7 +185,6 @@ namespace RacingSim.Damage
             return rollingResistance + aeroDrag;
         }
 
-        [BurstCompile]
         public static float GetSurfaceGripMultiplier(SurfaceType type)
         {
             switch (type)

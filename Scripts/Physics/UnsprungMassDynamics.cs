@@ -81,7 +81,7 @@ namespace RacingSim.Physics
                 tireForce = config.TireStiffness * penetration
                           + config.TireDamping * (-state.WheelVelocity);
 
-                state.WheelVelocity += (tireForce - config.Mass * GRAVITY) / config.Mass * 0.001f;
+                state.WheelVelocity += (tireForce - config.Mass * GRAVITY) / config.Mass * dt;
                 state.WheelPosition = groundHeight + 0.001f;
                 state.WheelVelocity = math.max(state.WheelVelocity, 0f);
             }

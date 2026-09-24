@@ -1,6 +1,5 @@
 using Unity.Burst;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace RacingSim.Aero
 {
@@ -45,7 +44,7 @@ namespace RacingSim.Aero
                 return result;
 
             float3 relWindLocal = relWind;
-            float effectiveYaw = math.atan2(relWindLocal.z, math.abs(relWindLocal.x));
+            float effectiveYaw = math.atan2(relWindLocal.z, relWindLocal.x);
             result.EffectiveYawAngle = effectiveYaw;
 
             float sideCoeff = config.CsBase * (1f + math.abs(effectiveYaw) * config.CrosswindSensitivity);

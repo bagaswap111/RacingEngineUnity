@@ -22,13 +22,11 @@ namespace RacingSim.Damage
     /// Visual mesh deformation from collision
     /// Implements vertex displacement based on impact energy
     /// </summary>
-    [BurstCompile]
     public static class VisualDamageSystem
     {
         /// <summary>
         /// Calculate mesh deformation from impact
         /// </summary>
-        [BurstCompile]
         public static void ApplyDeformation(
             NativeArray<float3> vertices,
             NativeArray<float3> normals,
@@ -84,7 +82,6 @@ namespace RacingSim.Damage
         /// <summary>
         /// Simple normal recalculation (simplified for burst)
         /// </summary>
-        [BurstCompile]
         private static void RecalculateNormals(NativeArray<float3> vertices, ref NativeArray<float3> normals)
         {
             // Simplified: use vertex position differences
@@ -326,7 +323,6 @@ namespace RacingSim.Damage
         /// <summary>
         /// Calculate performance penalty from damage
         /// </summary>
-        [BurstCompile]
         public static float CalculatePerformancePenalty(float health, DamageState state)
         {
             switch (state)

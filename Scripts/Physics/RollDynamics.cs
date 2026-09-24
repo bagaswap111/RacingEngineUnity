@@ -103,11 +103,13 @@ namespace RacingSim.Physics
 
             if (trackFront > 0.001f)
             {
+                float heightAboveRC_front = cgHeight - rollCenterHeightFront;
                 result.GeometricFront = (vehicleMass * lateralAccel * rollCenterHeightFront) / trackFront;
                 result.ElasticFront = (vehicleMass * lateralAccel * heightAboveRC_front) / trackFront;
             }
             if (trackRear > 0.001f)
             {
+                float heightAboveRC_rear = cgHeight - rollCenterHeightRear;
                 result.GeometricRear = (vehicleMass * lateralAccel * rollCenterHeightRear) / trackRear;
                 result.ElasticRear = (vehicleMass * lateralAccel * heightAboveRC_rear) / trackRear;
             }

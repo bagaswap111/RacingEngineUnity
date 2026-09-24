@@ -64,7 +64,7 @@ namespace RacingSim.Core
 
         public float FixedDeltaTime => fixedDeltaTime;
         public float3 Forward => math.mul(rotation, CoordinateSystem.VehicleForward);
-        public float3 Right => math.mul(rotation, CoordinateSystem.VehicleLeft);
+        public float3 Right => math.mul(rotation, -CoordinateSystem.VehicleLeft);
         public float3 Up => math.mul(rotation, CoordinateSystem.VehicleUp);
 
         private void Awake()
@@ -102,12 +102,10 @@ namespace RacingSim.Core
             float3 acceleration = accumulatedForce / mass;
             velocity += acceleration * dt;
 
-            float3 angularAcceleration = angularVelocity != float3.zero
-                ? new float3(
-                    accumulatedTorque.x / inertiaDiagonal.x,
-                    accumulatedTorque.y / inertiaDiagonal.y,
-                    accumulatedTorque.z / inertiaDiagonal.z)
-                : float3.zero;
+            float3 angularAcceleration = new float3(
+                inertiaDiagonal.x > 1e-6f ? accumulatedTorque.x / inertiaDiagonal.x : 0f,
+                inertiaDiagonal.y > 1e-6f ? accumulatedTorque.y / inertiaDiagonal.y : 0f,
+                inertiaDiagonal.z > 1e-6f ? accumulatedTorque.z / inertiaDiagonal.z : 0f);
 
             angularVelocity += angularAcceleration * dt;
 

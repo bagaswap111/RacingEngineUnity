@@ -41,7 +41,6 @@ namespace RacingSim.Damage
         }
     }
 
-    [BurstCompile]
     public struct CollisionResult
     {
         public float3 Impulse;
@@ -51,10 +50,8 @@ namespace RacingSim.Damage
         public bool Collided;
     }
 
-    [BurstCompile]
     public static class VehicleCollision
     {
-        [BurstCompile]
         public static CollisionResult ResolveCollision(
             float3 posA, float3 velA, float3 angVelA,
             float3 posB, float3 velB, float3 angVelB,
@@ -118,7 +115,6 @@ namespace RacingSim.Damage
             return result;
         }
 
-        [BurstCompile]
         public static void ApplyImpulse(
             ref float3 velocity,
             ref float3 angularVelocity,
@@ -136,7 +132,6 @@ namespace RacingSim.Damage
                 angularImpulse.z / inertia.z);
         }
 
-        [BurstCompile]
         public static bool CheckTunneling(
             float3 posA, float3 velA,
             float3 posB, float3 velB,

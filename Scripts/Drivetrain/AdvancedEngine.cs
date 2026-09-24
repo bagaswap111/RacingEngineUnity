@@ -143,6 +143,7 @@ namespace RacingSim.Drivetrain
 
             state.EngineBrakeTorque = CalculateEngineBraking(state.RPM, config);
 
+            bool wasRevLimiterActive = state.RevLimiterActive;
             state.RevLimiterActive = false;
             if (state.RPM > config.RedlineRPM)
             {
@@ -150,8 +151,9 @@ namespace RacingSim.Drivetrain
                 naTorque = 0f;
                 state.RPM -= (state.RPM - config.RedlineRPM) * dt * 10f;
             }
-            else if (state.RPM > config.RedlineRPM - config.RevLimiterHysteresis && state.RevLimiterActive)
+            else if (state.RPM > config.RedlineRPM - config.RevLimiterHysteresis && wasRevLimiterActive)
             {
+                state.RevLimiterActive = true;
                 naTorque = 0f;
             }
 

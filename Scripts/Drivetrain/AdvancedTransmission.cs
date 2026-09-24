@@ -25,7 +25,6 @@ namespace RacingSim.Drivetrain
     ///   Two shafts, pre-select next gear
     ///   Torque interruption < 20 ms
     /// </summary>
-    [BurstCompile]
     public struct TransmissionConfig
     {
         public float[] GearRatios;
@@ -97,7 +96,7 @@ namespace RacingSim.Drivetrain
 
             if (state.ShiftState == ShiftState.Engaged)
             {
-                state.ClutchPosition = math.lerp(state.ClutchPosition, clutchInput, dt * 10f);
+                state.ClutchPosition = math.lerp(state.ClutchPosition, clutchInput, math.saturate(dt * 10f));
                 state.DrivelineTwist = CalculateDrivelineTwist(
                     state.InputShaftRPM, state.OutputShaftRPM,
                     config.DrivelineStiffness, config.DrivelineDamping, dt);
@@ -187,7 +186,7 @@ namespace RacingSim.Drivetrain
             float dt)
         {
             float rpmDiff = inputRPM - outputRPM;
-            float twistForce = stiffness * (rpmDiff * 0.001f);
+            float twistForce = stiffness * (rpmDiff * 0.001f) + damping * (rpmDiff * 0.001f);
             return twistForce * dt;
         }
 

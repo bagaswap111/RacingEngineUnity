@@ -98,8 +98,8 @@ namespace RacingSim.Physics
             float frictionTorque = brakeTorque * state.FrictionCoeff;
 
             float heatGen = frictionTorque * speed * 0.001f;
-            float cooling = config.CoolingRate * (state.Temperature - 25f) * dt;
-            state.Temperature += (heatGen - cooling) * dt;
+            float cooling = config.CoolingRate * (state.Temperature - 25f);
+            state.Temperature += heatGen * dt - cooling * dt;
             state.Temperature = math.max(state.Temperature, 25f);
 
             state.FrictionCoeff = CalculateFrictionCoefficient(state.Temperature);

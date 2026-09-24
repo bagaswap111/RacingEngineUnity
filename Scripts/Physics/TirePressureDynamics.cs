@@ -84,7 +84,7 @@ namespace RacingSim.Physics
             state.GripMultiplier = 1f - (pressureRatio - 1f) * config.PressureGripFactor;
             state.GripMultiplier = math.clamp(state.GripMultiplier, 0.7f, 1.1f);
 
-            state.ContactPatchArea = verticalLoad / state.Pressure;
+            state.ContactPatchArea = verticalLoad / math.max(state.Pressure, 1f);
 
             return state;
         }
@@ -104,6 +104,7 @@ namespace RacingSim.Physics
             float currentPressure,
             float referencePressure)
         {
+            if (referencePressure < 1f) return 1f;
             float ratio = currentPressure / referencePressure;
             return 1f - (ratio - 1f) * 0.15f;
         }
