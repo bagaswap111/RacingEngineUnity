@@ -305,10 +305,10 @@ namespace RacingSim.Telemetry
         /// </summary>
         [BurstCompile]
         public static bool CheckStartFinishCrossing(
-            float3 previousPosition,
-            float3 currentPosition,
-            float3 startFinishPoint,
-            float3 startFinishNormal,
+            in float3 previousPosition,
+            in float3 currentPosition,
+            in float3 startFinishPoint,
+            in float3 startFinishNormal,
             out bool isInvalidLap)
         {
             isInvalidLap = false;
@@ -331,8 +331,8 @@ namespace RacingSim.Telemetry
         /// </summary>
         [BurstCompile]
         public static bool CheckSectorCrossing(
-            float3 currentPosition,
-            float3 sectorPosition,
+            in float3 currentPosition,
+            in float3 sectorPosition,
             float sectorRadius,
             ref bool hasCrossed)
         {
@@ -391,7 +391,6 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Format speed for display
         /// </summary>
-        [BurstCompile]
         public static string FormatSpeed(float speedKmh, bool useMph = false)
         {
             if (useMph)
@@ -405,7 +404,6 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Format lap time for display
         /// </summary>
-        [BurstCompile]
         public static string FormatLapTime(float timeSeconds)
         {
             if (timeSeconds <= 0f) return "--:--.---";
@@ -419,7 +417,6 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Format tire temperature with color coding
         /// </summary>
-        [BurstCompile]
         public static (string text, Color color) FormatTireTemp(float tempC)
         {
             Color color;
@@ -439,7 +436,6 @@ namespace RacingSim.Telemetry
         /// <summary>
         /// Get shift light color based on RPM
         /// </summary>
-        [BurstCompile]
         public static Color GetShiftLightColor(float rpm, float redline, in VehicleConfig config)
         {
             float ratio = rpm / redline;

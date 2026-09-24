@@ -70,44 +70,45 @@ namespace RacingSim.Physics
     {
         [BurstCompile]
         public static SteeringState Update(
-            SteeringState state,
-            SteeringConfig config,
+            in SteeringState state,
+            in SteeringConfig config,
             float steeringWheelAngle,
             float lateralForce,
             float verticalLoad,
             float casterAngle,
             float dt)
         {
+            SteeringState result = state;
             float currentRatio = config.SteeringRatio
-                                + config.RatioGain * math.abs(state.WheelAngle);
+                                + config.RatioGain * math.abs(result.WheelAngle);
 
-            state.WheelAngle = steeringWheelAngle / currentRatio;
+            result.WheelAngle = steeringWheelAngle / currentRatio;
 
-            state.WheelAngle = math.clamp(
-                state.WheelAngle,
+            result.WheelAngle = math.clamp(
+                result.WheelAngle,
                 -config.MaxSteerAngle,
                 config.MaxSteerAngle);
 
             float compliance = lateralForce * config.SteeringCompliance;
-            state.WheelAngle += compliance;
+            result.WheelAngle += compliance;
 
-            state.SelfAligningTorque = CalculateSelfAligningTorque(
+            result.SelfAligningTorque = CalculateSelfAligningTorque(
                 lateralForce, verticalLoad, config, casterAngle);
 
-            state.FrictionTorque = config.FrictionTorque *
-                (math.abs(state.WheelAngle) > 0.01f ? 1f : 0f);
+            result.FrictionTorque = config.FrictionTorque *
+                (math.abs(result.WheelAngle) > 0.01f ? 1f : 0f);
 
-            float totalTorque = state.SelfAligningTorque - state.FrictionTorque;
-            state.SteeringTorque = totalTorque;
+            float totalTorque = result.SelfAligningTorque - result.FrictionTorque;
+            result.SteeringTorque = totalTorque;
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
         public static float CalculateSelfAligningTorque(
             float lateralForce,
             float verticalLoad,
-            SteeringConfig config,
+            in SteeringConfig config,
             float casterAngle)
         {
             float pneumaticTrail = lateralForce * config.PneumaticTrail *

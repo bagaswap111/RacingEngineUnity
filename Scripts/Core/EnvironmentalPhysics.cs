@@ -66,7 +66,7 @@ namespace RacingSim.Core
 
         [BurstCompile]
         public static EnvironmentState Update(
-            EnvironmentConfig config,
+            in EnvironmentConfig config,
             float time)
         {
             EnvironmentState state = new EnvironmentState();
@@ -113,8 +113,8 @@ namespace RacingSim.Core
 
         [BurstCompile]
         public static float3 CalculateWindAtPosition(
-            float3 position,
-            EnvironmentState env,
+            in float3 position,
+            in EnvironmentState env,
             float time)
         {
             float localVariation = math.sin(position.x * 0.01f + time * 0.1f) * 0.2f;

@@ -84,7 +84,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Calculate throttle reduction based on wheel slip
         /// </summary>
-        [BurstCompile]
         public static (float correctedThrottle, float tcReduction, bool tcActive) Calculate(
             float[] wheelSlipRatios,  // κ for each wheel
             int[] drivenWheels,       // Indices of driven wheels
@@ -137,7 +136,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Alternative: Direct engine torque reduction
         /// </summary>
-        [BurstCompile]
         public static (float correctedTorque, float torqueReduction, bool tcActive) CalculateTorqueCut(
             float[] wheelSlipRatios,
             int[] drivenWheels,
@@ -188,7 +186,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Calculate brake pressure for each wheel independently
         /// </summary>
-        [BurstCompile]
         public static (float[] pressures, float absReduction, bool absActive) Calculate(
             float[] wheelSlipRatios,  // κ for each wheel (negative during braking)
             float brakeInput,         // 0.0 - 1.0
@@ -257,7 +254,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Simplified ABS: single threshold-based intervention
         /// </summary>
-        [BurstCompile]
         public static (float[] pressures, bool absActive) CalculateSimple(
             float[] wheelSlipRatios,
             float brakeInput,
@@ -299,7 +295,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Calculate optimal brake bias based on deceleration and load transfer
         /// </summary>
-        [BurstCompile]
         public static float CalculateOptimalBias(
             float longitudinalAccel,  // m/s² (negative during braking)
             float lateralAccel,       // m/s²
@@ -342,7 +337,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Calculate throttle limit for optimal launch
         /// </summary>
-        [BurstCompile]
         public static float CalculateLaunchThrottle(
             float vehicleSpeed,
             float engineRPM,
@@ -373,7 +367,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Calculate optimal clutch engagement for launch
         /// </summary>
-        [BurstCompile]
         public static float CalculateLaunchClutch(
             float vehicleSpeed,
             float engineRPM,
@@ -415,7 +408,6 @@ namespace RacingSim.Electronics
         /// <summary>
         /// Determine shift light state
         /// </summary>
-        [BurstCompile]
         public static (bool shouldShift, float intensity, int activeLights) Calculate(
             float engineRPM,
             in VehicleConfig config)

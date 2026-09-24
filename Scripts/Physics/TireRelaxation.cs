@@ -42,7 +42,7 @@ namespace RacingSim.Physics
 
         [BurstCompile]
         public void Update(
-            float3 steadyStateForce,
+            in float3 steadyStateForce,
             float steadyStateTorque,
             float forwardSpeed,
             float dt)
@@ -88,7 +88,7 @@ namespace RacingSim.Physics
 
         [BurstCompile]
         public void Update(
-            float3 steadyStateForce,
+            in float3 steadyStateForce,
             float steadyStateTorque,
             float forwardSpeed,
             float dt)

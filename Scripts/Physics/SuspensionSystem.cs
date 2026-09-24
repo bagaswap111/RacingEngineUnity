@@ -81,7 +81,17 @@ namespace RacingSim.Physics
         public float AligningTorque { get => aligningTorque; set => aligningTorque = value; }
         public float Pressure { get => tirePressure; set => tirePressure = value; }
     }
-    
+
+    /// <summary>
+    /// Hasil kinematika suspensi (Burst-safe, menggantikan ValueTuple).
+    /// </summary>
+    public struct SuspensionKinematics
+    {
+        public float camber;
+        public float toe;
+        public float caster;
+    }
+
     /// <summary>
     /// Sistem suspensi dengan model spring-damper dan kinematika.
     /// Menghitung gaya suspensi berdasarkan travel dan velocity.
@@ -150,7 +160,7 @@ namespace RacingSim.Physics
         /// <param name="staticToe">Static toe (radian)</param>
         /// <returns>Tuple (camber, toe, caster) dalam radian</returns>
         [BurstCompile]
-        public static (float camber, float toe, float caster) CalculateKinematics(
+        public static SuspensionKinematics CalculateKinematics(
             float travel,
             float steeringInput,
             float maxSteerAngle,
@@ -171,7 +181,7 @@ namespace RacingSim.Physics
             // Untuk simplifikasi, kita anggap konstan
             float caster = 0.087f;  // ~5 derajat
             
-            return (camber, toe, caster);
+            return new SuspensionKinematics { camber = camber, toe = toe, caster = caster };
         }
         
         /// <summary>
@@ -185,10 +195,10 @@ namespace RacingSim.Physics
         /// <returns>Posisi hub dalam world space</returns>
         [BurstCompile]
         public static float3 CalculateHubPosition(
-            float3 chassisPosition,
-            quaternion chassisRotation,
-            float3 localHubPosition,
-            float3 travelDirection,
+            in float3 chassisPosition,
+            in quaternion chassisRotation,
+            in float3 localHubPosition,
+            in float3 travelDirection,
             float travel)
         {
             // Hub bergerak sepanjang travel direction
@@ -208,7 +218,7 @@ namespace RacingSim.Physics
         /// <param name="wheelRadius">Radius ban (m)</param>
         /// <returns>Ride height (m), negatif jika ban di bawah ground</returns>
         [BurstCompile]
-        public static float CalculateRideHeight(float3 hubPosition, float groundHeight, float wheelRadius)
+        public static float CalculateRideHeight(in float3 hubPosition, float groundHeight, float wheelRadius)
         {
             float hubHeight = hubPosition.y;
             float rideHeight = hubHeight - groundHeight - wheelRadius;

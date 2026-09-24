@@ -53,7 +53,17 @@ namespace RacingSim.Physics
         // Beban nominal untuk normalisasi
         public float fzNominal;  // Beban vertikal nominal (N)
     }
-    
+
+    /// <summary>
+    /// Hasil gabungan gaya ban (Burst-safe, menggantikan ValueTuple).
+    /// </summary>
+    public struct TireForceResult
+    {
+        public float Fx;
+        public float Fy;
+        public float Mz;
+    }
+
     /// <summary>
     /// Implementasi Pacejka Magic Formula untuk simulasi ban.
     /// Menggunakan koefisien load-dependent untuk akurasi tinggi.
@@ -184,7 +194,7 @@ namespace RacingSim.Physics
         /// <param name="coeff">Koefisien Pacejka</param>
         /// <returns>Tuple (Fx, Fy, Mz) dalam Newton dan Nm</returns>
         [BurstCompile]
-        public static (float Fx, float Fy, float Mz) CalculateCombinedForces(
+        public static TireForceResult CalculateCombinedForces(
             float slipAngle, 
             float slipRatio, 
             float fz, 
@@ -192,7 +202,7 @@ namespace RacingSim.Physics
             float gripMultiplier,
             in TireCoefficients coeff)
         {
-            if (fz <= 0f) return (0f, 0f, 0f);
+            if (fz <= 0f) return new TireForceResult();
             
             // 1. Hitung pure forces terlebih dahulu
             float fyPure = CalculateLateralForce(slipAngle, fz, camber, coeff);
@@ -254,11 +264,16 @@ namespace RacingSim.Physics
             // Mz = -Fy * pneumaticTrail + residualTorque
             float mz = -fy * pneumaticTrail + residualTorque;
 
-            return (fx * gripMultiplier, fy * gripMultiplier, mz * gripMultiplier);
+            return new TireForceResult
+            {
+                Fx = fx * gripMultiplier,
+                Fy = fy * gripMultiplier,
+                Mz = mz * gripMultiplier
+            };
         }
 
         [BurstCompile]
-        public static (float Fx, float Fy, float Mz) CalculateCombinedForces(
+        public static TireForceResult CalculateCombinedForces(
             float slipAngle,
             float slipRatio,
             float fz,

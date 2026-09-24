@@ -50,7 +50,6 @@ namespace RacingSim.Aero
         /// <summary>
         /// Calculate aerodynamic forces on vehicle
         /// </summary>
-        [BurstCompile]
         public static (float3 force, float3 torque) CalculateAeroForces(
             float3 velocity,        // World space velocity
             float3 windVelocity,    // World space wind
@@ -136,7 +135,6 @@ namespace RacingSim.Aero
         /// <summary>
         /// Lookup aero coefficients using bilinear interpolation
         /// </summary>
-        [BurstCompile]
         private static AeroCoefficients LookupAeroCoefficients(
             float yawAngle,
             float rideHeightF,
@@ -181,7 +179,6 @@ namespace RacingSim.Aero
         /// <summary>
         /// Interpolate coefficients based on yaw angle only
         /// </summary>
-        [BurstCompile]
         private static AeroCoefficients InterpolateYawOnly(float yawAngle, in VehicleConfig config)
         {
             if (config.aeroMap == null || config.aeroMap.Length == 0)
@@ -232,7 +229,6 @@ namespace RacingSim.Aero
         /// <summary>
         /// Apply wing angle adjustments to aero coefficients
         /// </summary>
-        [BurstCompile]
         private static AeroCoefficients ApplyWingAdjustments(
             AeroCoefficients coeffs,
             float wingFrontAngle,
@@ -267,7 +263,6 @@ namespace RacingSim.Aero
         /// <summary>
         /// Calculate individual wheel aero effects (for open-wheel cars)
         /// </summary>
-        [BurstCompile]
         public static float3 CalculateWheelDrag(
             float3 wheelPosition,
             float3 velocity,

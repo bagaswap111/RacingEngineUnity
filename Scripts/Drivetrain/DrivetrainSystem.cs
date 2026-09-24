@@ -33,6 +33,15 @@ namespace RacingSim.Drivetrain
     }
 
     /// <summary>
+    /// Differential torque split result (Burst-safe, menggantikan ValueTuple).
+    /// </summary>
+    public struct DiffTorqueSplit
+    {
+        public float torqueLeft;
+        public float torqueRight;
+    }
+
+    /// <summary>
     /// Engine simulation with torque curve, inertia, friction, and damage effects
     /// Implements: τ_engine = τ_base(RPM) × throttle_map × f_damage × f_temp
     /// </summary>
@@ -43,7 +52,6 @@ namespace RacingSim.Drivetrain
         /// Calculate engine torque based on RPM and throttle input
         /// Uses lookup table interpolation for torque curve
         /// </summary>
-        [BurstCompile]
         public static float CalculateEngineTorque(
             float rpm, 
             float throttle, 
@@ -82,7 +90,6 @@ namespace RacingSim.Drivetrain
         /// Calculate engine angular acceleration
         /// I_engine · dω/dt = τ_engine - τ_clutch - τ_friction
         /// </summary>
-        [BurstCompile]
         public static float CalculateAngularAcceleration(
             float engineTorque,
             float clutchTorque,
@@ -135,7 +142,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Non-linear throttle mapping for realistic engine behavior
         /// </summary>
-        [BurstCompile]
         private static float CalculateThrottleMapping(float throttle, float rpm, in VehicleConfig config)
         {
             // Simple linear mapping (can be enhanced with throttle map table)
@@ -155,7 +161,6 @@ namespace RacingSim.Drivetrain
         /// Temperature factor calculation
         /// Cold engine and overheating both reduce power
         /// </summary>
-        [BurstCompile]
         private static float CalculateTempFactor(float engineTemp, float oilTemp, in VehicleConfig config)
         {
             float factor = 1f;
@@ -181,7 +186,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Calculate engine braking torque when throttle is closed
         /// </summary>
-        [BurstCompile]
         public static float CalculateEngineBraking(float rpm, float throttle, in VehicleConfig config)
         {
             if (throttle > 0.1f) return 0f; // No engine braking when on throttle
@@ -207,7 +211,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Calculate clutch torque based on engagement and slip
         /// </summary>
-        [BurstCompile]
         public static float CalculateClutchTorque(
             float engagement, // 0.0 - 1.0
             float engineOmega, // rad/s
@@ -246,7 +249,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Calculate ideal engagement for smooth shifting
         /// </summary>
-        [BurstCompile]
         public static float CalculateIdealEngagement(
             float pedalInput, // 0.0 - 1.0 (1.0 = pedal released)
             float shiftProgress, // 0.0 - 1.0 during gear change
@@ -283,7 +285,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Get total gear ratio (gear × final drive)
         /// </summary>
-        [BurstCompile]
         public static float GetTotalRatio(int gear, in VehicleConfig config)
         {
             if (gear <= 0 || gear > config.gearRatios.Length)
@@ -299,7 +300,6 @@ namespace RacingSim.Drivetrain
         /// Calculate output torque from gearbox
         /// τ_output = τ_input × r_total × η_gearbox
         /// </summary>
-        [BurstCompile]
         public static float CalculateOutputTorque(
             float inputTorque,
             int gear,
@@ -321,7 +321,6 @@ namespace RacingSim.Drivetrain
         /// Calculate output angular velocity
         /// ω_output = ω_input / r_total
         /// </summary>
-        [BurstCompile]
         public static float CalculateOutputOmega(
             float inputOmega,
             int gear,
@@ -338,7 +337,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Determine optimal shift point based on power curve
         /// </summary>
-        [BurstCompile]
         public static bool ShouldShiftUp(
             float currentRPM,
             int currentGear,
@@ -362,7 +360,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Determine if should downshift
         /// </summary>
-        [BurstCompile]
         public static bool ShouldShiftDown(
             float currentRPM,
             int currentGear,
@@ -393,8 +390,7 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Calculate torque split between left and right wheels
         /// </summary>
-        [BurstCompile]
-        public static (float torqueLeft, float torqueRight) CalculateTorqueSplit(
+        public static DiffTorqueSplit CalculateTorqueSplit(
             float inputTorque,
             float omegaLeft,
             float omegaRight,
@@ -416,7 +412,7 @@ namespace RacingSim.Drivetrain
                     return CalculateTorsen(inputTorque, omegaLeft, omegaRight, config);
                 
                 default:
-                    return (inputTorque * 0.5f, inputTorque * 0.5f);
+                    return new DiffTorqueSplit { torqueLeft = inputTorque * 0.5f, torqueRight = inputTorque * 0.5f };
             }
         }
 
@@ -425,20 +421,19 @@ namespace RacingSim.Drivetrain
         /// τ_left = τ_right = τ_input / 2
         /// </summary>
         [BurstCompile]
-        private static (float, float) CalculateOpenDiff(
+        private static DiffTorqueSplit CalculateOpenDiff(
             float inputTorque,
             float omegaLeft,
             float omegaRight)
         {
             float halfTorque = inputTorque * 0.5f;
-            return (halfTorque, halfTorque);
+            return new DiffTorqueSplit { torqueLeft = halfTorque, torqueRight = halfTorque };
         }
 
         /// <summary>
         /// Limited Slip Differential with clutch preload
         /// </summary>
-        [BurstCompile]
-        private static (float, float) CalculateLSD(
+        private static DiffTorqueSplit CalculateLSD(
             float inputTorque,
             float omegaLeft,
             float omegaRight,
@@ -465,15 +460,18 @@ namespace RacingSim.Drivetrain
             float maxTransfer = math.abs(halfTorque);
             torqueTransfer = math.clamp(torqueTransfer, -maxTransfer, maxTransfer);
             
-            return (halfTorque + torqueTransfer, halfTorque - torqueTransfer);
+            return new DiffTorqueSplit
+            {
+                torqueLeft = halfTorque + torqueTransfer,
+                torqueRight = halfTorque - torqueTransfer
+            };
         }
 
         /// <summary>
         /// Viscous differential: torque transfer proportional to speed difference
         /// τ_transfer = k_viscous × (ω_left - ω_right)
         /// </summary>
-        [BurstCompile]
-        private static (float, float) CalculateViscousDiff(
+        private static DiffTorqueSplit CalculateViscousDiff(
             float inputTorque,
             float omegaLeft,
             float omegaRight,
@@ -489,15 +487,18 @@ namespace RacingSim.Drivetrain
             float maxTransfer = math.abs(halfTorque) * 0.8f;
             torqueTransfer = math.clamp(torqueTransfer, -maxTransfer, maxTransfer);
             
-            return (halfTorque + torqueTransfer, halfTorque - torqueTransfer);
+            return new DiffTorqueSplit
+            {
+                torqueLeft = halfTorque + torqueTransfer,
+                torqueRight = halfTorque - torqueTransfer
+            };
         }
 
         /// <summary>
         /// Torsen differential with Torque Bias Ratio
         /// τ_max_wheel = τ_min_wheel × TBR
         /// </summary>
-        [BurstCompile]
-        private static (float, float) CalculateTorsen(
+        private static DiffTorqueSplit CalculateTorsen(
             float inputTorque,
             float omegaLeft,
             float omegaRight,
@@ -519,11 +520,11 @@ namespace RacingSim.Drivetrain
             
             if (fasterWheel == 0) // Left wheel spinning
             {
-                return (minTorque, maxTorque);
+                return new DiffTorqueSplit { torqueLeft = minTorque, torqueRight = maxTorque };
             }
             else // Right wheel spinning
             {
-                return (maxTorque, minTorque);
+                return new DiffTorqueSplit { torqueLeft = maxTorque, torqueRight = minTorque };
             }
         }
     }
@@ -582,7 +583,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Update drivetrain state for one simulation step
         /// </summary>
-        [BurstCompile]
         public static void Update(
             ref DrivetrainState state,
             float throttleInput,
@@ -682,7 +682,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Handle automatic/manual gear shifting
         /// </summary>
-        [BurstCompile]
         private static void HandleGearShifting(
             ref DrivetrainState state,
             float throttleInput,
@@ -703,7 +702,7 @@ namespace RacingSim.Drivetrain
                     state.ShiftProgress = 0f;
                     
                     // Match engine speed to new gear (simplified)
-                    float targetOmega = GetWheelOmegaAverage(state) * 
+                    float targetOmega = GetWheelOmegaAverage(in state) * 
                                        GearboxSim.GetTotalRatio(state.CurrentGear, config);
                     state.EngineOmega = targetOmega;
                 }
@@ -729,7 +728,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Request a gear shift
         /// </summary>
-        [BurstCompile]
         private static void RequestShift(
             ref DrivetrainState state,
             int targetGear,
@@ -747,7 +745,6 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Apply drive torque to appropriate wheels based on drivetrain configuration
         /// </summary>
-        [BurstCompile]
         private static void ApplyDriveTorque(
             ref DrivetrainState state,
             float diffTorque,
@@ -797,18 +794,17 @@ namespace RacingSim.Drivetrain
         /// <summary>
         /// Get input shaft omega (after clutch, before gearbox)
         /// </summary>
-        [BurstCompile]
-        private static float GetInputShaftOmega(DrivetrainState state, in VehicleConfig config)
+        private static float GetInputShaftOmega(in DrivetrainState state, in VehicleConfig config)
         {
             // Simplified: use average driven wheel speed
-            return GetWheelOmegaAverage(state);
+            return GetWheelOmegaAverage(in state);
         }
 
         /// <summary>
         /// Get average wheel omega for driven wheels
         /// </summary>
         [BurstCompile]
-        private static float GetWheelOmegaAverage(DrivetrainState state)
+        private static float GetWheelOmegaAverage(in DrivetrainState state)
         {
             // Simplified average - would need to know which wheels are driven
             return (state.WheelOmegaFL + state.WheelOmegaFR + 

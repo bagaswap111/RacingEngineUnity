@@ -58,35 +58,36 @@ namespace RacingSim.Physics
     {
         [BurstCompile]
         public static ChassisFlexState Update(
-            ChassisFlexState state,
-            ChassisFlexConfig config,
+            in ChassisFlexState state,
+            in ChassisFlexConfig config,
             float rollTorque,
             float dt)
         {
-            float restoringTorque = config.TorsionalStiffness * state.TorsionAngle;
-            float dampingTorque = config.FlexDamping * state.TorsionVelocity;
+            ChassisFlexState result = state;
+            float restoringTorque = config.TorsionalStiffness * result.TorsionAngle;
+            float dampingTorque = config.FlexDamping * result.TorsionVelocity;
 
             float inertia = config.TorsionalStiffness * 0.0001f;
             float angularAccel = inertia > 0.0001f
                 ? (rollTorque - restoringTorque - dampingTorque) / inertia
                 : 0f;
 
-            state.TorsionVelocity += angularAccel * dt;
-            state.TorsionAngle += state.TorsionVelocity * dt;
+            result.TorsionVelocity += angularAccel * dt;
+            result.TorsionAngle += result.TorsionVelocity * dt;
 
-            state.TorsionAngle = math.clamp(state.TorsionAngle, -0.1f, 0.1f);
+            result.TorsionAngle = math.clamp(result.TorsionAngle, -0.1f, 0.1f);
 
-            float flexOffset = state.TorsionAngle * config.ArmLength;
-            state.CamberOffset = flexOffset * config.CamberFlexFactor;
-            state.ToeOffset = flexOffset * config.ToeFlexFactor;
+            float flexOffset = result.TorsionAngle * config.ArmLength;
+            result.CamberOffset = flexOffset * config.CamberFlexFactor;
+            result.ToeOffset = flexOffset * config.ToeFlexFactor;
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
         public static float CalculateEffectiveSpringRate(
             float baseSpringRate,
-            ChassisFlexConfig config)
+            in ChassisFlexConfig config)
         {
             float flexCompliance = 1f / config.TorsionalStiffness;
             float effectiveCompliance = 1f / baseSpringRate + flexCompliance;
@@ -95,7 +96,7 @@ namespace RacingSim.Physics
 
         [BurstCompile]
         public static float CalculateChassisFrequency(
-            ChassisFlexConfig config,
+            in ChassisFlexConfig config,
             float vehicleMass)
         {
             return math.sqrt(config.TorsionalStiffness / (vehicleMass * 0.1f))

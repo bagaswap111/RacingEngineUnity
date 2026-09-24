@@ -12,11 +12,11 @@ namespace RacingSim.Aero
     {
         [BurstCompile]
         public static CrosswindResult Calculate(
-            float3 vehiclePosition,
-            float3 vehicleVelocity,
-            float3 vehicleForward,
+            in float3 vehiclePosition,
+            in float3 vehicleVelocity,
+            in float3 vehicleForward,
             float windSpeed,
-            float3 windDirection,
+            in float3 windDirection,
             float time,
             in AeroConfig config)
         {

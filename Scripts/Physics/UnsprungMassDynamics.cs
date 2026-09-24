@@ -63,27 +63,28 @@ namespace RacingSim.Physics
 
         [BurstCompile]
         public static UnsprungMassState Update(
-            UnsprungMassState state,
-            UnsprungMassConfig config,
+            in UnsprungMassState state,
+            in UnsprungMassConfig config,
             float chassisVerticalForce,
             float groundHeight,
             float chassisAcceleration,
             float dt)
         {
+            UnsprungMassState result = state;
             float tireForce = 0f;
-            state.IsGrounded = false;
+            result.IsGrounded = false;
 
-            if (state.WheelPosition <= groundHeight + 0.001f)
+            if (result.WheelPosition <= groundHeight + 0.001f)
             {
-                state.IsGrounded = true;
+                result.IsGrounded = true;
 
-                float penetration = groundHeight - state.WheelPosition;
+                float penetration = groundHeight - result.WheelPosition;
                 tireForce = config.TireStiffness * penetration
-                          + config.TireDamping * (-state.WheelVelocity);
+                          + config.TireDamping * (-result.WheelVelocity);
 
-                state.WheelVelocity += (tireForce - config.Mass * GRAVITY) / config.Mass * dt;
-                state.WheelPosition = groundHeight + 0.001f;
-                state.WheelVelocity = math.max(state.WheelVelocity, 0f);
+                result.WheelVelocity += (tireForce - config.Mass * GRAVITY) / config.Mass * dt;
+                result.WheelPosition = groundHeight + 0.001f;
+                result.WheelVelocity = math.max(result.WheelVelocity, 0f);
             }
 
             float netForce = chassisVerticalForce
@@ -91,23 +92,23 @@ namespace RacingSim.Physics
                            - tireForce;
 
             float wheelAcceleration = netForce / config.Mass;
-            state.WheelVelocity += wheelAcceleration * dt;
-            state.WheelPosition += state.WheelVelocity * dt;
+            result.WheelVelocity += wheelAcceleration * dt;
+            result.WheelPosition += result.WheelVelocity * dt;
 
-            state.WheelPosition = math.clamp(
-                state.WheelPosition,
+            result.WheelPosition = math.clamp(
+                result.WheelPosition,
                 -config.MaxDroop,
                 config.MaxCompression);
 
-            state.ContactForce = tireForce;
-            state.TireDeflection = groundHeight - state.WheelPosition;
+            result.ContactForce = tireForce;
+            result.TireDeflection = groundHeight - result.WheelPosition;
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
         public static float CalculateWheelHopFrequency(
-            UnsprungMassConfig config,
+            in UnsprungMassConfig config,
             float sprungMass,
             float springRate)
         {
@@ -118,7 +119,7 @@ namespace RacingSim.Physics
 
         [BurstCompile]
         public static float CalculateWheelHopDampingRatio(
-            UnsprungMassConfig config,
+            in UnsprungMassConfig config,
             float damperRate)
         {
             float criticalDamping = 2f * math.sqrt(config.TireStiffness * config.Mass);

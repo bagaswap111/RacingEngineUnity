@@ -40,7 +40,6 @@ namespace RacingSim.Core
     /// 10. Damage checks
     /// 11. Telemetry logging
     /// </summary>
-    [BurstCompile]
     public static class SimulationLoop
     {
         /// <summary>
@@ -98,7 +97,6 @@ namespace RacingSim.Core
         /// Main simulation update function
         /// Call this every FixedUpdate from MonoBehaviour
         /// </summary>
-        [BurstCompile]
         public static void Update(
             ref SimulationState state,
             float dt,
@@ -467,7 +465,6 @@ namespace RacingSim.Core
 
         // Helper methods
         
-        [BurstCompile]
         private static int[] GetDrivenWheels(DrivetrainType type)
         {
             switch (type)
@@ -483,7 +480,6 @@ namespace RacingSim.Core
         /// Calculate suspension travel based on wheel position relative to body
         /// Uses raycast-like approach from wheel hub to ground plane
         /// </summary>
-        [BurstCompile]
         private static float CalculateSuspensionTravel(SimulationState state, int wheelIndex, in VehicleConfig config)
         {
             // Get wheel position in local space
@@ -511,7 +507,6 @@ namespace RacingSim.Core
         /// Calculate tire grip multiplier based on temperature and wear
         /// Optimal temperature range: 90-110°C for slick tires
         /// </summary>
-        [BurstCompile]
         private static float GetTireGripMultiplier(SimulationState state, int index, in VehicleConfig config)
         {
             // Get average tire temperature for this wheel
@@ -538,7 +533,6 @@ namespace RacingSim.Core
             return tempMultiplier * wearMultiplier * pressureMultiplier;
         }
         
-        [BurstCompile]
         private static float GetTireTempInner(SimulationState state, int index)
         {
             switch (index)
@@ -551,7 +545,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static float GetTireTempMiddle(SimulationState state, int index)
         {
             switch (index)
@@ -564,7 +557,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static float GetTireTempOuter(SimulationState state, int index)
         {
             switch (index)
@@ -577,7 +569,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static void GetTireTemps(SimulationState state, int index, out float inner, out float middle, out float outer)
         {
             inner = GetTireTempInner(state, index);
@@ -585,7 +576,6 @@ namespace RacingSim.Core
             outer = GetTireTempOuter(state, index);
         }
         
-        [BurstCompile]
         private static void SetTireTemps(ref SimulationState state, int index, float inner, float middle, float outer)
         {
             switch (index)
@@ -613,7 +603,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static float GetBrakeTemp(SimulationState state, int index)
         {
             switch (index)
@@ -626,7 +615,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static void SetBrakeTemp(ref SimulationState state, int index, float temp)
         {
             switch (index)
@@ -638,7 +626,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static float GetTireWear(SimulationState state, int index)
         {
             switch (index)
@@ -651,7 +638,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static float GetBrakeWear(SimulationState state, int index)
         {
             switch (index)
@@ -664,7 +650,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static float GetTirePressure(SimulationState state, int index)
         {
             switch (index)
@@ -677,7 +662,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static void SetTireWear(ref SimulationState state, int index, float wear)
         {
             switch (index)
@@ -689,7 +673,6 @@ namespace RacingSim.Core
             }
         }
         
-        [BurstCompile]
         private static void SetTirePunctured(ref SimulationState state, int index, bool punctured)
         {
             switch (index)
@@ -705,7 +688,6 @@ namespace RacingSim.Core
         /// Calculate average ride height for front or rear axle
         /// Used for aerodynamic calculations
         /// </summary>
-        [BurstCompile]
         private static float AverageRideHeight(SimulationState state, bool front)
         {
             if (front)
@@ -722,7 +704,6 @@ namespace RacingSim.Core
         /// Get wheel position in local vehicle space
         /// Coordinate system: X=forward, Y=up, Z=right
         /// </summary>
-        [BurstCompile]
         private static float3 GetWheelPositionLocal(int index, in VehicleConfig config)
         {
             float halfFrontTrack = config.frontTrackWidth * 0.5f;
@@ -747,7 +728,6 @@ namespace RacingSim.Core
         /// Calculate brake force with thermal fade consideration
         /// Brake fade reduces effectiveness as temperature increases
         /// </summary>
-        [BurstCompile]
         private static float CalculateBrakeForce(float brakeInput, int wheelIndex, in VehicleConfig config, in Thermal.ThermalState thermal)
         {
             float brakeTemp = GetBrakeTemp(new SimulationState { Thermal = thermal }, wheelIndex);
@@ -776,7 +756,6 @@ namespace RacingSim.Core
         /// <summary>
         /// Get drive torque distribution to specific wheel based on differential type
         /// </summary>
-        [BurstCompile]
         private static float GetDriveTorqueForWheel(Drivetrain.DrivetrainState dt, int wheelIndex, in VehicleConfig config)
         {
             // Get total torque from drivetrain

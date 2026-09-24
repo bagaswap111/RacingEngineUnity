@@ -84,85 +84,87 @@ namespace RacingSim.Drivetrain
     {
         [BurstCompile]
         public static TransmissionState Update(
-            TransmissionState state,
-            TransmissionConfig config,
+            in TransmissionState state,
+            in TransmissionConfig config,
             float engineRPM,
             float wheelRPM,
             float clutchInput,
             float dt)
         {
-            state.InputShaftRPM = engineRPM;
-            state.OutputShaftRPM = wheelRPM * config.FinalDriveRatio;
+            TransmissionState result = state;
+            result.InputShaftRPM = engineRPM;
+            result.OutputShaftRPM = wheelRPM * config.FinalDriveRatio;
 
-            if (state.ShiftState == ShiftState.Engaged)
+            if (result.ShiftState == ShiftState.Engaged)
             {
-                state.ClutchPosition = math.lerp(state.ClutchPosition, clutchInput, math.saturate(dt * 10f));
-                state.DrivelineTwist = CalculateDrivelineTwist(
-                    state.InputShaftRPM, state.OutputShaftRPM,
+                result.ClutchPosition = math.lerp(result.ClutchPosition, clutchInput, math.saturate(dt * 10f));
+                result.DrivelineTwist = CalculateDrivelineTwist(
+                    result.InputShaftRPM, result.OutputShaftRPM,
                     config.DrivelineStiffness, config.DrivelineDamping, dt);
             }
             else
             {
-                state = ProcessShift(state, config, dt);
+                result = ProcessShift(result, config, dt);
             }
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
         private static TransmissionState ProcessShift(
-            TransmissionState state,
-            TransmissionConfig config,
+            in TransmissionState state,
+            in TransmissionConfig config,
             float dt)
         {
-            state.ShiftTimer += dt;
+            TransmissionState result = state;
+            result.ShiftTimer += dt;
 
-            switch (state.ShiftState)
+            switch (result.ShiftState)
             {
                 case ShiftState.ClutchDisengaging:
-                    state.ClutchPosition = math.max(0f, state.ClutchPosition - dt / 0.05f);
-                    if (state.ClutchPosition <= 0f)
+                    result.ClutchPosition = math.max(0f, result.ClutchPosition - dt / 0.05f);
+                    if (result.ClutchPosition <= 0f)
                     {
-                        state.ShiftState = ShiftState.Neutral;
-                        state.ShiftTimer = 0f;
+                        result.ShiftState = ShiftState.Neutral;
+                        result.ShiftTimer = 0f;
                     }
                     break;
 
                 case ShiftState.Neutral:
-                    if (state.ShiftTimer > 0.05f)
+                    if (result.ShiftTimer > 0.05f)
                     {
-                        state.ShiftState = ShiftState.ClutchEngaging;
-                        state.ShiftTimer = 0f;
+                        result.ShiftState = ShiftState.ClutchEngaging;
+                        result.ShiftTimer = 0f;
                     }
                     break;
 
                 case ShiftState.ClutchEngaging:
-                    state.ClutchPosition = math.min(1f, state.ClutchPosition + dt / config.ClutchEngagementTime);
-                    if (state.ClutchPosition >= 1f)
+                    result.ClutchPosition = math.min(1f, result.ClutchPosition + dt / config.ClutchEngagementTime);
+                    if (result.ClutchPosition >= 1f)
                     {
-                        state.ShiftState = ShiftState.Engaged;
-                        state.CurrentGear = state.TargetGear;
-                        state.ShiftTimer = 0f;
+                        result.ShiftState = ShiftState.Engaged;
+                        result.CurrentGear = result.TargetGear;
+                        result.ShiftTimer = 0f;
                     }
                     break;
 
                 case ShiftState.Failed:
-                    if (state.ShiftTimer > 0.5f)
+                    if (result.ShiftTimer > 0.5f)
                     {
-                        state.ShiftState = ShiftState.Engaged;
-                        state.ShiftTimer = 0f;
-                        state.ShiftFailed = false;
+                        result.ShiftState = ShiftState.Engaged;
+                        result.ShiftTimer = 0f;
+                        result.ShiftFailed = false;
                     }
                     break;
             }
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
         public static TransmissionState InitiateShift(
-            TransmissionState state,
-            TransmissionConfig config,
+            in TransmissionState state,
+            in TransmissionConfig config,
             int targetGear)
         {
             if (state.ShiftState != ShiftState.Engaged)
@@ -171,10 +173,11 @@ namespace RacingSim.Drivetrain
             if (targetGear < 0 || targetGear >= config.GearRatios.Length)
                 return state;
 
-            state.TargetGear = targetGear;
-            state.ShiftState = ShiftState.ClutchDisengaging;
-            state.ShiftTimer = 0f;
-            return state;
+            TransmissionState result = state;
+            result.TargetGear = targetGear;
+            result.ShiftState = ShiftState.ClutchDisengaging;
+            result.ShiftTimer = 0f;
+            return result;
         }
 
         [BurstCompile]
@@ -192,8 +195,8 @@ namespace RacingSim.Drivetrain
 
         [BurstCompile]
         public static bool CanEngage(
-            TransmissionState state,
-            TransmissionConfig config)
+            in TransmissionState state,
+            in TransmissionConfig config)
         {
             float rpmDiff = math.abs(state.InputShaftRPM - state.OutputShaftRPM);
             return rpmDiff < config.EngagementThreshold;

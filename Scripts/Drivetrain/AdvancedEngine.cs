@@ -106,78 +106,79 @@ namespace RacingSim.Drivetrain
 
         [BurstCompile]
         public static EngineState Update(
-            EngineState state,
-            AdvancedEngineConfig config,
-            TurboConfig turbo,
+            in EngineState state,
+            in AdvancedEngineConfig config,
+            in TurboConfig turbo,
             float throttle,
             float loadTorque,
             float dt)
         {
-            if (!state.EngineRunning)
+            EngineState result = state;
+            if (!result.EngineRunning)
             {
-                state.TorqueOutput = 0f;
-                return state;
+                result.TorqueOutput = 0f;
+                return result;
             }
 
-            float rpmNorm = state.RPM / config.RedlineRPM;
+            float rpmNorm = result.RPM / config.RedlineRPM;
             float naTorque = CalculateNATorque(rpmNorm, config.Displacement);
 
-            if (turbo.HasTurbo && state.RPM > turbo.BoostThresholdRPM)
+            if (turbo.HasTurbo && result.RPM > turbo.BoostThresholdRPM)
             {
                 float targetBoost = throttle * turbo.MaxBoostPressure;
-                float boostRate = (targetBoost - state.BoostPressure) / turbo.TurboLag;
-                state.BoostPressure += boostRate * dt;
-                state.BoostPressure = math.clamp(state.BoostPressure, 0f, turbo.MaxBoostPressure);
+                float boostRate = (targetBoost - result.BoostPressure) / turbo.TurboLag;
+                result.BoostPressure += boostRate * dt;
+                result.BoostPressure = math.clamp(result.BoostPressure, 0f, turbo.MaxBoostPressure);
 
-                state.TurboRPM += (state.BoostPressure * 100000f / turbo.TurboInertia
-                                  - state.TurboRPM * turbo.WastegateFlow) * dt;
-                state.TurboRPM = math.clamp(state.TurboRPM, 0f, 150000f);
+                result.TurboRPM += (result.BoostPressure * 100000f / turbo.TurboInertia
+                                  - result.TurboRPM * turbo.WastegateFlow) * dt;
+                result.TurboRPM = math.clamp(result.TurboRPM, 0f, 150000f);
 
-                naTorque *= (1f + state.BoostPressure * turbo.TurboGain);
+                naTorque *= (1f + result.BoostPressure * turbo.TurboGain);
             }
             else
             {
-                state.BoostPressure = math.max(0f, state.BoostPressure - dt * 2f);
-                state.TurboRPM = math.max(0f, state.TurboRPM - dt * 50000f);
+                result.BoostPressure = math.max(0f, result.BoostPressure - dt * 2f);
+                result.TurboRPM = math.max(0f, result.TurboRPM - dt * 50000f);
             }
 
-            state.EngineBrakeTorque = CalculateEngineBraking(state.RPM, config);
+            result.EngineBrakeTorque = CalculateEngineBraking(result.RPM, config);
 
-            bool wasRevLimiterActive = state.RevLimiterActive;
-            state.RevLimiterActive = false;
-            if (state.RPM > config.RedlineRPM)
+            bool wasRevLimiterActive = result.RevLimiterActive;
+            result.RevLimiterActive = false;
+            if (result.RPM > config.RedlineRPM)
             {
-                state.RevLimiterActive = true;
+                result.RevLimiterActive = true;
                 naTorque = 0f;
-                state.RPM -= (state.RPM - config.RedlineRPM) * dt * 10f;
+                result.RPM -= (result.RPM - config.RedlineRPM) * dt * 10f;
             }
-            else if (state.RPM > config.RedlineRPM - config.RevLimiterHysteresis && wasRevLimiterActive)
+            else if (result.RPM > config.RedlineRPM - config.RevLimiterHysteresis && wasRevLimiterActive)
             {
-                state.RevLimiterActive = true;
+                result.RevLimiterActive = true;
                 naTorque = 0f;
             }
 
-            if (throttle < 0.01f && state.RPM > config.IdleRPM)
+            if (throttle < 0.01f && result.RPM > config.IdleRPM)
             {
-                state.TorqueOutput = naTorque - state.EngineBrakeTorque;
+                result.TorqueOutput = naTorque - result.EngineBrakeTorque;
             }
             else
             {
-                state.TorqueOutput = naTorque;
+                result.TorqueOutput = naTorque;
             }
 
             float inertia = config.FlywheelInertia + config.CrankshaftInertia + config.PistonInertia;
-            float angularAccel = (state.TorqueOutput - loadTorque) / inertia;
-            state.RPM += angularAccel * dt * (1f / RPM_TO_RADS);
+            float angularAccel = (result.TorqueOutput - loadTorque) / inertia;
+            result.RPM += angularAccel * dt * (1f / RPM_TO_RADS);
 
-            state.RPM = math.clamp(state.RPM, 0f, config.RedlineRPM + 500f);
+            result.RPM = math.clamp(result.RPM, 0f, config.RedlineRPM + 500f);
 
-            if (state.RPM < config.StallRPM && throttle < 0.1f)
+            if (result.RPM < config.StallRPM && throttle < 0.1f)
             {
-                state.EngineRunning = false;
+                result.EngineRunning = false;
             }
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
@@ -189,7 +190,7 @@ namespace RacingSim.Drivetrain
         }
 
         [BurstCompile]
-        private static float CalculateEngineBraking(float rpm, AdvancedEngineConfig config)
+        private static float CalculateEngineBraking(float rpm, in AdvancedEngineConfig config)
         {
             float rpmNorm = rpm / config.RedlineRPM;
             float compressionBrake = config.Displacement * config.CompressionRatio * rpmNorm * 10f;

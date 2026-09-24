@@ -65,12 +65,13 @@ namespace RacingSim.Core
     {
         [BurstCompile]
         public static TrackTempState Update(
-            TrackTempState state,
-            TrackTempConfig config,
+            in TrackTempState state,
+            in TrackTempConfig config,
             float tireWear,
             float dt)
         {
-            float heatGain = (config.AmbientTemperature - state.SurfaceTemperature)
+            TrackTempState result = state;
+            float heatGain = (config.AmbientTemperature - result.SurfaceTemperature)
                            * config.HeatTransferRate * dt;
 
             float sunGain = config.SunIntensity * config.AbsorptionRate * dt;
@@ -79,22 +80,22 @@ namespace RacingSim.Core
             if (config.RainIntensity > 0f)
             {
                 rainCooling = config.RainIntensity * config.CoolingRate * dt;
-                state.IsRaining = true;
+                result.IsRaining = true;
             }
             else
             {
-                state.IsRaining = false;
+                result.IsRaining = false;
             }
 
-            state.SurfaceTemperature += heatGain + sunGain - rainCooling;
-            state.SurfaceTemperature = math.clamp(state.SurfaceTemperature, -10f, 80f);
+            result.SurfaceTemperature += heatGain + sunGain - rainCooling;
+            result.SurfaceTemperature = math.clamp(result.SurfaceTemperature, -10f, 80f);
 
-            state.RubberLevel += tireWear * config.RubberDepositRate * dt;
-            state.RubberLevel = math.clamp(state.RubberLevel, 0f, config.MaxRubberLevel);
+            result.RubberLevel += tireWear * config.RubberDepositRate * dt;
+            result.RubberLevel = math.clamp(result.RubberLevel, 0f, config.MaxRubberLevel);
 
-            state.GripMultiplier = 1f + state.RubberLevel * config.GripGain;
+            result.GripMultiplier = 1f + result.RubberLevel * config.GripGain;
 
-            return state;
+            return result;
         }
 
         [BurstCompile]

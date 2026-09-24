@@ -86,38 +86,39 @@ namespace RacingSim.Physics
     {
         [BurstCompile]
         public static AdvancedBrakeState Update(
-            AdvancedBrakeState state,
-            AdvancedBrakeConfig config,
+            in AdvancedBrakeState state,
+            in AdvancedBrakeConfig config,
             float brakeInput,
             float verticalLoad,
             float loadTransfer,
             float speed,
             float dt)
         {
+            AdvancedBrakeState result = state;
             float brakeTorque = brakeInput * config.MaxBrakeTorque;
-            float frictionTorque = brakeTorque * state.FrictionCoeff;
+            float frictionTorque = brakeTorque * result.FrictionCoeff;
 
             float heatGen = frictionTorque * speed * 0.001f;
-            float cooling = config.CoolingRate * (state.Temperature - 25f);
-            state.Temperature += heatGen * dt - cooling * dt;
-            state.Temperature = math.max(state.Temperature, 25f);
+            float cooling = config.CoolingRate * (result.Temperature - 25f);
+            result.Temperature += heatGen * dt - cooling * dt;
+            result.Temperature = math.max(result.Temperature, 25f);
 
-            state.FrictionCoeff = CalculateFrictionCoefficient(state.Temperature);
-            state.FadeFactor = CalculateFadeFactor(state.Temperature, config);
-            state.WarpAmount = CalculateWarp(state.WarpAmount, state.Temperature, config, dt);
+            result.FrictionCoeff = CalculateFrictionCoefficient(result.Temperature);
+            result.FadeFactor = CalculateFadeFactor(result.Temperature, config);
+            result.WarpAmount = CalculateWarp(result.WarpAmount, result.Temperature, config, dt);
 
-            state.FluidTemperature = state.Temperature * 0.4f;
-            state.FluidBoiled = state.FluidTemperature > config.FluidBoilTemp;
+            result.FluidTemperature = result.Temperature * 0.4f;
+            result.FluidBoiled = result.FluidTemperature > config.FluidBoilTemp;
 
-            if (state.FluidBoiled)
+            if (result.FluidBoiled)
                 brakeTorque *= 0.3f;
 
-            state.DynamicBias = config.StaticBias + loadTransfer * config.BiasMigrationFactor;
-            state.DynamicBias = math.clamp(state.DynamicBias, 0.4f, 0.7f);
+            result.DynamicBias = config.StaticBias + loadTransfer * config.BiasMigrationFactor;
+            result.DynamicBias = math.clamp(result.DynamicBias, 0.4f, 0.7f);
 
-            state.BrakeTorque = brakeTorque * state.FrictionCoeff * state.FadeFactor;
+            result.BrakeTorque = brakeTorque * result.FrictionCoeff * result.FadeFactor;
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
@@ -131,7 +132,7 @@ namespace RacingSim.Physics
         }
 
         [BurstCompile]
-        private static float CalculateFadeFactor(float temperature, AdvancedBrakeConfig config)
+        private static float CalculateFadeFactor(float temperature, in AdvancedBrakeConfig config)
         {
             if (temperature < config.FadeStartTemp)
                 return 1.0f;
@@ -145,7 +146,7 @@ namespace RacingSim.Physics
         private static float CalculateWarp(
             float currentWarp,
             float temperature,
-            AdvancedBrakeConfig config,
+            in AdvancedBrakeConfig config,
             float dt)
         {
             if (temperature < config.WarpThreshold)

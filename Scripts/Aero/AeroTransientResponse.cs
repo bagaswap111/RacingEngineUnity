@@ -52,27 +52,28 @@ namespace RacingSim.Aero
     {
         [BurstCompile]
         public static AeroTransientState Update(
-            AeroTransientState state,
-            AeroTransientConfig config,
+            in AeroTransientState state,
+            in AeroTransientConfig config,
             float frontDownforceSteady,
             float rearDownforceSteady,
             float groundEffectSteady,
             float diffuserSteady,
             float dt)
         {
-            state.FrontDownforceActual = SmoothToward(
-                state.FrontDownforceActual, frontDownforceSteady, config.FrontWingTau, dt);
+            AeroTransientState result = state;
+            result.FrontDownforceActual = SmoothToward(
+                result.FrontDownforceActual, frontDownforceSteady, config.FrontWingTau, dt);
 
-            state.RearDownforceActual = SmoothToward(
-                state.RearDownforceActual, rearDownforceSteady, config.RearWingTau, dt);
+            result.RearDownforceActual = SmoothToward(
+                result.RearDownforceActual, rearDownforceSteady, config.RearWingTau, dt);
 
-            state.GroundEffectActual = SmoothToward(
-                state.GroundEffectActual, groundEffectSteady, config.GroundEffectTau, dt);
+            result.GroundEffectActual = SmoothToward(
+                result.GroundEffectActual, groundEffectSteady, config.GroundEffectTau, dt);
 
-            state.DiffuserActual = SmoothToward(
-                state.DiffuserActual, diffuserSteady, config.DiffuserTau, dt);
+            result.DiffuserActual = SmoothToward(
+                result.DiffuserActual, diffuserSteady, config.DiffuserTau, dt);
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
@@ -99,7 +100,7 @@ namespace RacingSim.Aero
         public static float CalculateOscillationRisk(
             float rideHeightChange,
             float speed,
-            AeroTransientConfig config)
+            in AeroTransientConfig config)
         {
             float freq = speed / (2f * math.PI * 0.3f);
             float geFreq = 1f / config.GroundEffectTau;

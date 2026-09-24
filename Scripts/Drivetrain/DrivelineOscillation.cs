@@ -61,38 +61,39 @@ namespace RacingSim.Drivetrain
     {
         [BurstCompile]
         public static DrivelineState Update(
-            DrivelineState state,
-            DrivelineConfig config,
+            in DrivelineState state,
+            in DrivelineConfig config,
             float engineTorque,
             float loadTorque,
             float dt)
         {
-            float twistAngle = state.EngineAngle - state.WheelAngle;
-            float twistVelocity = state.EngineAngularVelocity - state.WheelAngularVelocity;
+            DrivelineState result = state;
+            float twistAngle = result.EngineAngle - result.WheelAngle;
+            float twistVelocity = result.EngineAngularVelocity - result.WheelAngularVelocity;
 
             float springTorque = config.DrivelineStiffness * twistAngle;
             float dampingTorque = config.DrivelineDamping * twistVelocity;
 
-            state.DrivelineTorque = springTorque + dampingTorque;
+            result.DrivelineTorque = springTorque + dampingTorque;
 
-            float engineAccel = (engineTorque - state.DrivelineTorque) / config.EngineInertia;
-            state.EngineAngularVelocity += engineAccel * dt;
-            state.EngineAngle += state.EngineAngularVelocity * dt;
+            float engineAccel = (engineTorque - result.DrivelineTorque) / config.EngineInertia;
+            result.EngineAngularVelocity += engineAccel * dt;
+            result.EngineAngle += result.EngineAngularVelocity * dt;
 
-            float wheelAccel = (state.DrivelineTorque - loadTorque) / config.WheelInertia;
-            state.WheelAngularVelocity += wheelAccel * dt;
-            state.WheelAngle += state.WheelAngularVelocity * dt;
+            float wheelAccel = (result.DrivelineTorque - loadTorque) / config.WheelInertia;
+            result.WheelAngularVelocity += wheelAccel * dt;
+            result.WheelAngle += result.WheelAngularVelocity * dt;
 
-            state.DrivelineTwist = twistAngle;
+            result.DrivelineTwist = twistAngle;
 
-            state.VerticalReactionForce = state.DrivelineTorque
+            result.VerticalReactionForce = result.DrivelineTorque
                 * math.tan(config.DriveshaftAngle) / config.WheelRadius;
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
-        public static float CalculateWheelHopFrequency(DrivelineConfig config)
+        public static float CalculateWheelHopFrequency(in DrivelineConfig config)
         {
             float effectiveInertia = (config.EngineInertia * config.WheelInertia)
                                    / (config.EngineInertia + config.WheelInertia);
@@ -100,7 +101,7 @@ namespace RacingSim.Drivetrain
         }
 
         [BurstCompile]
-        public static float CalculateDrivelineDampingRatio(DrivelineConfig config)
+        public static float CalculateDrivelineDampingRatio(in DrivelineConfig config)
         {
             float effectiveInertia = (config.EngineInertia * config.WheelInertia)
                                    / (config.EngineInertia + config.WheelInertia);

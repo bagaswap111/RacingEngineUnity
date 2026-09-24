@@ -135,7 +135,7 @@ namespace RacingSim.Physics
         }
 
         [BurstCompile]
-        private static float3 CalculateWheelNormal(in SuspensionConfig config, float3 uprightPos)
+        private static float3 CalculateWheelNormal(in SuspensionConfig config, in float3 uprightPos)
         {
             float3 steerAxis = math.normalize(config.SteeringAxis_Top - config.SteeringAxis_Bottom);
             float3 right = math.normalize(math.cross(steerAxis, new float3(0, 1, 0)));
@@ -143,13 +143,13 @@ namespace RacingSim.Physics
         }
 
         [BurstCompile]
-        private static float CalculateCamber(float3 wheelNormal)
+        private static float CalculateCamber(in float3 wheelNormal)
         {
             return math.asin(math.clamp(math.dot(wheelNormal, new float3(1, 0, 0)), -1f, 1f));
         }
 
         [BurstCompile]
-        private static float CalculateKPI(in SuspensionConfig config, float3 uprightPos)
+        private static float CalculateKPI(in SuspensionConfig config, in float3 uprightPos)
         {
             float3 steerAxis = math.normalize(config.SteeringAxis_Top - config.SteeringAxis_Bottom);
             return math.asin(math.clamp(math.dot(steerAxis, new float3(1, 0, 0)), -1f, 1f));
@@ -189,7 +189,7 @@ namespace RacingSim.Physics
         }
 
         [BurstCompile]
-        private static float2 CalculateInstantCenter(in SuspensionConfig config, float3 uprightPos)
+        private static float2 CalculateInstantCenter(in SuspensionConfig config, in float3 uprightPos)
         {
             float2 ucaStart = new float2(config.UCA_Front.y, config.UCA_Front.z);
             float2 ucaEnd = new float2(config.UCA_Outboard.y + (uprightPos.y - config.LCA_Outboard.y),

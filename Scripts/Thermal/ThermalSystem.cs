@@ -24,7 +24,6 @@ namespace RacingSim.Thermal
         /// <summary>
         /// Update tire temperatures for all three zones
         /// </summary>
-        [BurstCompile]
         public static (float tempInner, float tempMiddle, float tempOuter) UpdateTemperatures(
             float tempInner,
             float tempMiddle,
@@ -142,7 +141,6 @@ namespace RacingSim.Thermal
         /// Calculate grip multiplier based on temperature
         /// μ(T) = μ_optimal × exp(-((T - T_optimal) / T_range)²)
         /// </summary>
-        [BurstCompile]
         public static float CalculateGripMultiplier(
             float tempInner,
             float tempMiddle,
@@ -222,7 +220,6 @@ namespace RacingSim.Thermal
         /// <summary>
         /// Update brake disc temperature
         /// </summary>
-        [BurstCompile]
         public static float UpdateTemperature(
             float currentTemp,
             float ambientTemp,
@@ -298,7 +295,6 @@ namespace RacingSim.Thermal
         /// <summary>
         /// Calculate brake fade factor based on temperature
         /// </summary>
-        [BurstCompile]
         public static float CalculateFadeFactor(float brakeTemp, in VehicleConfig config)
         {
             float fadeFactor = 1f;
@@ -350,7 +346,6 @@ namespace RacingSim.Thermal
         /// <summary>
         /// Update engine and oil temperatures
         /// </summary>
-        [BurstCompile]
         public static (float engineTemp, float oilTemp) UpdateTemperatures(
             float engineTemp,
             float oilTemp,
@@ -424,7 +419,6 @@ namespace RacingSim.Thermal
         /// <summary>
         /// Check for overheating condition
         /// </summary>
-        [BurstCompile]
         public static bool CheckOverheating(float engineTemp, float oilTemp, in VehicleConfig config)
         {
             return engineTemp > config.engineTempCritical || 

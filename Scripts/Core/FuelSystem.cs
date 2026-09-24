@@ -65,39 +65,40 @@ namespace RacingSim.Core
     {
         [BurstCompile]
         public static FuelSystemState Update(
-            FuelSystemState state,
-            FuelSystemConfig config,
+            in FuelSystemState state,
+            in FuelSystemConfig config,
             float baseMass,
             float driverMass,
-            float3 acceleration,
+            in float3 acceleration,
             float fuelConsumption,
             float dt)
         {
-            state.FuelLevel = math.max(0f, state.FuelLevel - fuelConsumption * dt);
-            state.FuelMass = state.FuelLevel * config.FuelDensity;
+            FuelSystemState result = state;
+            result.FuelLevel = math.max(0f, result.FuelLevel - fuelConsumption * dt);
+            result.FuelMass = result.FuelLevel * config.FuelDensity;
 
             float3 localAccel = new float3(acceleration.x, 0f, acceleration.z);
             float lateralG = math.abs(acceleration.x) / 9.81f;
             float longG = math.abs(acceleration.z) / 9.81f;
 
-            state.CoGOffset = new float3(
+            result.CoGOffset = new float3(
                 config.FuelPositionX,
                 config.FuelPositionY,
                 0f) + localAccel * config.SloshFactor;
 
-            state.TotalMass = baseMass + state.FuelMass + driverMass;
+            result.TotalMass = baseMass + result.FuelMass + driverMass;
 
-            state.Starved = false;
-            if (state.FuelLevel < config.StarvationFuelLevel)
+            result.Starved = false;
+            if (result.FuelLevel < config.StarvationFuelLevel)
             {
                 if (lateralG > config.StarvationThresholdLateralG ||
                     longG > config.StarvationThresholdLongG)
                 {
-                    state.Starved = true;
+                    result.Starved = true;
                 }
             }
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
@@ -117,7 +118,7 @@ namespace RacingSim.Core
 
         [BurstCompile]
         public static float3 CalculateCoGShift(
-            float3 fuelPosition,
+            in float3 fuelPosition,
             float fuelMass,
             float totalMass)
         {

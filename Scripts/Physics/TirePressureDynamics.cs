@@ -59,44 +59,46 @@ namespace RacingSim.Physics
     {
         [BurstCompile]
         public static TirePressureState Update(
-            TirePressureState state,
-            TirePressureConfig config,
+            in TirePressureState state,
+            in TirePressureConfig config,
             float verticalLoad,
             float tireTemperature,
             float dt)
         {
-            state.Temperature = tireTemperature;
+            TirePressureState result = state;
+            result.Temperature = tireTemperature;
 
-            if (state.Punctured)
+            if (result.Punctured)
             {
-                state.PunctureTimer += dt;
-                float punctureFactor = math.exp(-config.PunctureDecayRate * state.PunctureTimer);
-                state.Pressure = config.ColdPressure * punctureFactor * 0.1f;
-                state.GripMultiplier = 0.15f;
-                state.ContactPatchArea = verticalLoad / math.max(state.Pressure, 10f);
-                return state;
+                result.PunctureTimer += dt;
+                float punctureFactor = math.exp(-config.PunctureDecayRate * result.PunctureTimer);
+                result.Pressure = config.ColdPressure * punctureFactor * 0.1f;
+                result.GripMultiplier = 0.15f;
+                result.ContactPatchArea = verticalLoad / math.max(result.Pressure, 10f);
+                return result;
             }
 
-            state.Pressure = config.ColdPressure * (state.Temperature / config.ColdTemperature);
-            state.Pressure = math.clamp(state.Pressure, config.MinPressure, config.MaxPressure);
+            result.Pressure = config.ColdPressure * (result.Temperature / config.ColdTemperature);
+            result.Pressure = math.clamp(result.Pressure, config.MinPressure, config.MaxPressure);
 
-            float pressureRatio = state.Pressure / config.ColdPressure;
-            state.GripMultiplier = 1f - (pressureRatio - 1f) * config.PressureGripFactor;
-            state.GripMultiplier = math.clamp(state.GripMultiplier, 0.7f, 1.1f);
+            float pressureRatio = result.Pressure / config.ColdPressure;
+            result.GripMultiplier = 1f - (pressureRatio - 1f) * config.PressureGripFactor;
+            result.GripMultiplier = math.clamp(result.GripMultiplier, 0.7f, 1.1f);
 
-            state.ContactPatchArea = verticalLoad / math.max(state.Pressure, 1f);
+            result.ContactPatchArea = verticalLoad / math.max(result.Pressure, 1f);
 
-            return state;
+            return result;
         }
 
         [BurstCompile]
         public static TirePressureState CreatePuncture(
-            TirePressureState state,
-            TirePressureConfig config)
+            in TirePressureState state,
+            in TirePressureConfig config)
         {
-            state.Punctured = true;
-            state.PunctureTimer = 0f;
-            return state;
+            TirePressureState result = state;
+            result.Punctured = true;
+            result.PunctureTimer = 0f;
+            return result;
         }
 
         [BurstCompile]
