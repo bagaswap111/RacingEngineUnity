@@ -7,7 +7,6 @@ namespace RacingSim.Physics
     /// State untuk satu roda dalam simulasi.
     /// Menyimpan semua data kinematika, gaya, dan termal ban.
     /// </summary>
-    [System.Obsolete("Pending wire to TireModel. Use SuspensionState for suspension-only data.")]
     [BurstCompile]
     public struct WheelState
     {
