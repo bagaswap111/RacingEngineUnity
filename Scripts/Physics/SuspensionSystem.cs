@@ -67,6 +67,19 @@ namespace RacingSim.Physics
         // Status
         public bool isGrounded;             // true jika kontak dengan ground
         public float groundHeight;          // Tinggi ground di bawah roda
+
+        // PascalCase aliases
+        public float SlipRatio { get => slipRatio; set => slipRatio = value; }
+        public float SlipAngle { get => slipAngle; set => slipAngle = value; }
+        public float AngularVelocity { get => angularVelocity; set => angularVelocity = value; }
+        public float CamberAngle { get => camberAngle; set => camberAngle = value; }
+        public float ToeAngle { get => toeAngle; set => toeAngle = value; }
+        public float RideHeight { get => rideHeight; set => rideHeight = value; }
+        public float VerticalLoad { get => verticalLoad; set => verticalLoad = value; }
+        public float LongitudinalForce { get => longitudinalForce; set => longitudinalForce = value; }
+        public float LateralForce { get => lateralForce; set => lateralForce = value; }
+        public float AligningTorque { get => aligningTorque; set => aligningTorque = value; }
+        public float Pressure { get => tirePressure; set => tirePressure = value; }
     }
     
     /// <summary>

@@ -44,7 +44,7 @@ namespace RacingSim.Physics
 
             if (useNonAlloc)
             {
-                int count = Physics.SphereCastNonAlloc(
+                int count = UnityEngine.Physics.SphereCastNonAlloc(
                     origin,
                     sphereRadius,
                     direction,
@@ -75,7 +75,7 @@ namespace RacingSim.Physics
             else
             {
                 RaycastHit hit;
-                if (Physics.SphereCast(origin, sphereRadius, direction, out hit, maxDistance, groundLayer))
+                if (UnityEngine.Physics.SphereCast(origin, sphereRadius, direction, out hit, maxDistance, groundLayer))
                 {
                     hitData.DidHit = true;
                     hitData.Distance = hit.distance;

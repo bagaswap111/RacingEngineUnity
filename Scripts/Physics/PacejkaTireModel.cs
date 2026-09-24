@@ -180,14 +180,16 @@ namespace RacingSim.Physics
         /// <param name="slipRatio">Slip ratio κ</param>
         /// <param name="fz">Beban vertikal (Newton)</param>
         /// <param name="camber">Camber angle (radian)</param>
+        /// <param name="gripMultiplier">Grip multiplier (thermal, wear)</param>
         /// <param name="coeff">Koefisien Pacejka</param>
         /// <returns>Tuple (Fx, Fy, Mz) dalam Newton dan Nm</returns>
         [BurstCompile]
-        public static (float fx, float fy, float mz) CalculateCombinedForces(
+        public static (float Fx, float Fy, float Mz) CalculateCombinedForces(
             float slipAngle, 
             float slipRatio, 
             float fz, 
             float camber,
+            float gripMultiplier,
             in TireCoefficients coeff)
         {
             if (fz <= 0f) return (0f, 0f, 0f);
@@ -251,8 +253,62 @@ namespace RacingSim.Physics
             
             // Mz = -Fy * pneumaticTrail + residualTorque
             float mz = -fy * pneumaticTrail + residualTorque;
-            
-            return (fx, fy, mz);
+
+            return (fx * gripMultiplier, fy * gripMultiplier, mz * gripMultiplier);
+        }
+
+        [BurstCompile]
+        public static (float Fx, float Fy, float Mz) CalculateCombinedForces(
+            float slipAngle,
+            float slipRatio,
+            float fz,
+            float camber,
+            float gripMultiplier,
+            in RacingSim.Vehicle.TireCoefficientsData data)
+        {
+            var coeff = ToTireCoefficients(data);
+            return CalculateCombinedForces(slipAngle, slipRatio, fz, camber, gripMultiplier, in coeff);
+        }
+
+        private static TireCoefficients ToTireCoefficients(in RacingSim.Vehicle.TireCoefficientsData data)
+        {
+            return new TireCoefficients
+            {
+                pCy1 = data.pCy1,
+                pDy1 = data.pDy1,
+                pDy2 = data.pDy2,
+                pEy1 = data.pEy1,
+                pEy2 = data.pEy2,
+                pEy3 = data.pEy3,
+                pKy1 = data.pKy1,
+                pKy2 = data.pKy2,
+                pKy3 = data.pKy3,
+                pCx1 = data.pCx1,
+                pDx1 = data.pDx1,
+                pDx2 = data.pDx2,
+                pEx1 = data.pEx1,
+                pEx2 = data.pEx2,
+                pEx3 = data.pEx3,
+                pKx1 = data.pKx1,
+                pKx2 = data.pKx2,
+                rBx1 = data.rBx1,
+                rBx2 = data.rBx2,
+                rBy1 = data.rBy1,
+                rBy2 = data.rBy2,
+                rCx1 = data.rCx1,
+                rCy1 = data.rCy1,
+                qBz1 = data.qBz1,
+                qBz2 = data.qBz2,
+                qCz1 = data.qCz1,
+                qDz1 = data.qDz1,
+                qDz2 = data.qDz2,
+                qEz1 = data.qEz1,
+                qEz2 = data.qEz2,
+                fzNominal = 4000f,
+                tempOptimal = 100f,
+                tempRange = 35f,
+                muBase = 1.8f
+            };
         }
         
         /// <summary>

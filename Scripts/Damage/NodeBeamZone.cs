@@ -36,6 +36,8 @@ namespace RacingSim.Damage
             config.Type = DamageZoneType.NodeBeam;
         }
 
+        public NativeArray<DeformNode> GetNodes() => nodes;
+
         public override void Initialize(DamageZoneConfig cfg)
         {
             base.Initialize(cfg);

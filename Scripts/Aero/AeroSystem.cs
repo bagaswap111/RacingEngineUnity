@@ -37,7 +37,7 @@ namespace RacingSim.Aero
         /// Calculate aerodynamic forces on vehicle
         /// </summary>
         [BurstCompile]
-        public static (float3 force, float torque) CalculateAeroForces(
+        public static (float3 force, float3 torque) CalculateAeroForces(
             float3 velocity,        // World space velocity
             float3 windVelocity,    // World space wind
             quaternion rotation,    // Vehicle rotation

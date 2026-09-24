@@ -1,4 +1,5 @@
 using UnityEngine;
+using RacingSim.Aero;
 
 namespace RacingSim.Vehicle
 {
@@ -112,7 +113,7 @@ namespace RacingSim.Vehicle
         
         [Header("Differential Parameters")]
         [Tooltip("Tipe differential: 0=Open, 1=LSD Clutch, 2=Viscous, 3=Torsen")]
-        public DifferentialType differentialType = DifferentialType.LSD_Clutch;
+        public DifferentialType differentialType = DifferentialType.LimitedSlip;
         
         [Tooltip("Preload torque untuk LSD (Nm)")]
         public float diffPreloadTorque = 80f;
@@ -319,21 +320,164 @@ namespace RacingSim.Vehicle
         [Header("Drivetrain Type")]
         [Tooltip("Tipe drivetrain: FWD, RWD, AWD")]
         public DrivetrainType drivetrainType = DrivetrainType.RWD;
+
+        [Header("Transmission")]
+        public TransmissionType transmissionType = TransmissionType.Manual;
+        public float shiftDuration = 0.08f;
+        public float reverseGearRatio = -3.5f;
+        public float optimalShiftRPM = 11000f;
+        public float awdFrontBias = 0.4f;
+
+        [Header("Engine Extended")]
+        public float engineMomentOfInertia = 0.015f;
+        public float engineFrictionConstant = 5f;
+        public float engineBrakingBase = 40f;
+        public float engineHeatGenerationBase = 80000f;
+        public float engineSurfaceArea = 1.2f;
+        public float engineConvectionCoeff = 25f;
+        public float engineMass = 120f;
+        public float engineTempOptimalMax = 105f;
+        public float engineTempCritical = 125f;
+        public float engineDamageOverrevRate = 0.5f;
+        public float engineDamageOverheatRate = 0.3f;
+        public float engineDamageColdRate = 0.1f;
+        public float optimalOilTempMin = 80f;
+        public float oilCapacity = 4.5f;
+        public float oilMaxTemperature = 150f;
+        public float oilCoolerEfficiencyBase = 0.4f;
+        public float oilCoolerAirflowFactor = 0.02f;
+        public float oilEngineHeatTransferCoeff = 150f;
+        public float coolantEfficiencyBase = 0.5f;
+        public float coolantEfficiencyFlowFactor = 0.1f;
+
+        [Header("Clutch Extended")]
+        public float clutchFrictionCoeff = 0.35f;
+        public float clutchNormalForce = 5000f;
+        public int clutchNumFrictionSurfaces = 4;
+
+        [Header("Differential Extended")]
+        public float lsdPreloadTorque = 80f;
+        public float lsdRampFactor = 1.5f;
+        public float lsdRampAngle = 45f;
+        public float viscousDiffCoefficient = 15f;
+        public float torsenTBR = 3.0f;
+
+        [Header("Electronics Extended")]
+        public float tcTargetSlip = 0.08f;
+        public float absTargetSlip = -0.10f;
+        public float absSlipThreshold = -0.20f;
+        public float brakeBiasFront = 0.58f;
+        public float cgHeight = 0.28f;
+        public float ebdLoadTransferGain = 0.15f;
+        public float ebdBrakingGain = 0.1f;
+        public float ebdCorneringGain = 0.05f;
+        public float minBrakeBias = 0.5f;
+        public float maxBrakeBias = 0.7f;
+        public float launchControlRPM = 5500f;
+        public float launchControlSensitivity = 0.8f;
+        public float launchControlMaxSlip = 0.25f;
+        public float shiftLightEarlyMargin = 500f;
+        public int numShiftLights = 10;
+        public float shiftLightStartRPM = 10000f;
+
+        [Header("Brake Extended")]
+        public float brakeCaliperAreaFront = 0.0025f;
+        public float brakeCaliperAreaRear = 0.0018f;
+        public float brakeDiscRadiusFront = 0.165f;
+        public float brakeDiscRadiusRear = 0.155f;
+        public float brakePadFrictionFront = 0.45f;
+        public float brakePadFrictionRear = 0.45f;
+        public float brakeEnergyToDiscFraction = 0.95f;
+        public float brakeConvectionBase = 80f;
+        public float brakeConvectionSpeedFactor = 5f;
+        public float brakeDiscArea = 0.04f;
+        public float brakeVaneFactor = 1.0f;
+        public float brakeEmissivity = 0.8f;
+        public float brakeConductionCoeff = 10f;
+        public float brakeDiscRadius = 0.165f;
+        public float brakeDiscThickness = 0.028f;
+        public float brakeMaxTemperature = 700f;
+        public float brakeFadeOnsetTemp = 500f;
+        public float brakeFadeSeverity = 0.5f;
+        public float brakeOptimalTempMin = 200f;
+
+        [Header("Suspension Damage")]
+        public float suspensionMaxLoad = 8000f;
+        public float suspensionTravelMax = 0.08f;
+        public float suspensionDamageOverloadRate = 0.2f;
+        public float suspensionDamageBottomingRate = 0.1f;
+        public float suspensionDamageOvertravelRate = 0.15f;
+
+        [Header("Tire Extended")]
+        public float tireWearBaseRate = 0.00005f;
+        public float tireWearSlipRate = 0.0002f;
+        public float tireWearFlatSpotRate = 0.001f;
+        public float tireOverheatThreshold = 140f;
+        public float tireMaxLoad = 12000f;
+        public float tireBurstTemperature = 180f;
+        public float tireHysteresisBase = 500f;
+        public float tireConvectionBase = 20f;
+        public float tireConvectionSpeedFactor = 2f;
+        public float tireSurfaceAreaInner = 0.05f;
+        public float tireSurfaceAreaMiddle = 0.05f;
+        public float tireSurfaceAreaOuter = 0.05f;
+        public float tireEmissivity = 0.9f;
+        public float tireContactPatchArea = 0.02f;
+        public float tireRoadConductionCoeff = 500f;
+        public float tireAspectRatio = 0.35f;
+        public float tireInternalTransferRate = 2f;
+        public float tireColdThreshold = 60f;
+
+        [Header("Aero Extended")]
+        public float drsCdMultiplier = 0.75f;
+        public float drsClMultiplier = 0.60f;
+        public float altitude = 0f;
+        public float frontalArea = 1.65f;
+        public float planformAreaFront = 1.4f;
+        public float planformAreaRear = 1.8f;
+        public float sideArea = 2.5f;
+        public float aeroCenterOfPressureX = 0.1f;
+        public float aeroCenterOfPressureY = -0.05f;
+        public float aeroCenterOfPressureZ = 0f;
+        public float cdBase = 0.85f;
+        public float clFrontBase = -1.2f;
+        public float clRearBase = -1.6f;
+        public float csBase = 0.8f;
+        public float rideHeightSensitivityFront = -2.0f;
+        public float rideHeightSensitivityRear = -2.5f;
+        public float rideHeightDragSensitivity = 1.5f;
+        public float wingFrontLiftGain = 0.5f;
+        public float wingFrontDragGain = 0.1f;
+        public float wingRearLiftGain = 1.0f;
+        public float wingRearDragGain = 0.2f;
+        public float wheelDragCoefficient = 0.7f;
+        public AeroMapPoint[] aeroMap;
+
+        [Header("Aero Damage")]
+        public float aeroDamageThreshold = 5000f;
+        public float aeroDamageCoefficient = 0.0001f;
     }
-    
+
     public enum DifferentialType
     {
         Open,
-        LSD_Clutch,
+        LimitedSlip,
         Viscous,
         Torsen
     }
-    
+
     public enum DrivetrainType
     {
         FWD,
         RWD,
         AWD
+    }
+
+    public enum TransmissionType
+    {
+        Manual,
+        Automatic,
+        SemiAutomatic
     }
     
     /// <summary>

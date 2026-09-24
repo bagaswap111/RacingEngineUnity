@@ -185,15 +185,20 @@ namespace RacingSim.Core
                 float suspensionTravel = CalculateSuspensionTravel(state, i, config);
                 
                 // Calculate kinematics
+                float maxSteerAngle = 0.5f; // ~28.6 degrees default max steer
                 var kinematics = Physics.SuspensionSystem.CalculateKinematics(
                     suspensionTravel,
                     state.SteeringInput,
-                    i, // wheel index (0=FL, 1=FR, 2=RL, 3=RR)
-                    config);
-                
+                    maxSteerAngle,
+                    config.camberGain,
+                    config.toeChangePerTravel,
+                    config.bumpSteerGain,
+                    0f,
+                    0f);
+
                 state.Wheels[i].CamberAngle = kinematics.camber;
                 state.Wheels[i].ToeAngle = kinematics.toe;
-                state.Wheels[i].RideHeight = kinematics.rideHeight;
+                state.Wheels[i].RideHeight = config.suspensionMaxTravel - suspensionTravel;
             }
             
             // ============================================================
@@ -267,7 +272,7 @@ namespace RacingSim.Core
             // Combine all forces acting on the vehicle body
             // ============================================================
             
-            float3 totalForce = new float3(0f, -config.mass * 9.81f, 0f); // Gravity
+            float3 totalForce = new float3(0f, -config.totalMass * 9.81f, 0f); // Gravity
             float3 totalTorque = new float3(0f);
             
             // Add wheel forces (transformed to world space)
@@ -298,7 +303,7 @@ namespace RacingSim.Core
             // ============================================================
             
             // Linear acceleration: a = F / m
-            state.Acceleration = totalForce / config.mass;
+            state.Acceleration = totalForce / config.totalMass;
             
             // Update velocity
             state.Velocity += state.Acceleration * dt;
@@ -311,7 +316,10 @@ namespace RacingSim.Core
             
             // Angular acceleration: α = τ / I
             float3 momentOfInertia = new float3(config.momentOfInertiaX, config.momentOfInertiaY, config.momentOfInertiaZ);
-            float3 angularAccel = math.cdiv(totalTorque, momentOfInertia);  // Component-wise division
+            float3 angularAccel = new float3(
+                totalTorque.x / momentOfInertia.x,
+                totalTorque.y / momentOfInertia.y,
+                totalTorque.z / momentOfInertia.z);
             
             // Update angular velocity
             state.AngularVelocity += angularAccel * dt;
@@ -757,38 +765,38 @@ namespace RacingSim.Core
             float totalTorque = dt.OutputTorque;
             
             // Distribute based on differential type
-            switch (config.diffType)
+            switch (config.differentialType)
             {
-                case Drivetrain.DifferentialType.Open:
+                case Vehicle.DifferentialType.Open:
                     // Equal torque split
-                    if (config.drivetrainType == Drivetrain.DrivetrainType.FWD && wheelIndex < 2)
+                    if (config.drivetrainType == Vehicle.DrivetrainType.FWD && wheelIndex < 2)
                         return totalTorque * 0.5f;
-                    else if (config.drivetrainType == Drivetrain.DrivetrainType.RWD && wheelIndex >= 2)
+                    else if (config.drivetrainType == Vehicle.DrivetrainType.RWD && wheelIndex >= 2)
                         return totalTorque * 0.5f;
-                    else if (config.drivetrainType == Drivetrain.DrivetrainType.AWD)
+                    else if (config.drivetrainType == Vehicle.DrivetrainType.AWD)
                         return totalTorque * 0.25f;
                     break;
                     
-                case Drivetrain.DifferentialType.LimitedSlip:
+                case Vehicle.DifferentialType.LimitedSlip:
                     // LSD biases torque to wheel with more grip
                     // Simplified: assume equal distribution for now
-                    if (config.drivetrainType == Drivetrain.DrivetrainType.FWD && wheelIndex < 2)
+                    if (config.drivetrainType == Vehicle.DrivetrainType.FWD && wheelIndex < 2)
                         return totalTorque * 0.5f;
-                    else if (config.drivetrainType == Drivetrain.DrivetrainType.RWD && wheelIndex >= 2)
+                    else if (config.drivetrainType == Vehicle.DrivetrainType.RWD && wheelIndex >= 2)
                         return totalTorque * 0.5f;
-                    else if (config.drivetrainType == Drivetrain.DrivetrainType.AWD)
+                    else if (config.drivetrainType == Vehicle.DrivetrainType.AWD)
                         return totalTorque * 0.25f;
                     break;
                     
-                case Drivetrain.DifferentialType.Torsen:
+                case Vehicle.DifferentialType.Torsen:
                     // Torsen can bias up to TBR (Torque Bias Ratio)
                     float tbr = config.torsenTBR;
                     // Simplified distribution
-                    if (config.drivetrainType == Drivetrain.DrivetrainType.FWD && wheelIndex < 2)
+                    if (config.drivetrainType == Vehicle.DrivetrainType.FWD && wheelIndex < 2)
                         return totalTorque * 0.5f;
-                    else if (config.drivetrainType == Drivetrain.DrivetrainType.RWD && wheelIndex >= 2)
+                    else if (config.drivetrainType == Vehicle.DrivetrainType.RWD && wheelIndex >= 2)
                         return totalTorque * 0.5f;
-                    else if (config.drivetrainType == Drivetrain.DrivetrainType.AWD)
+                    else if (config.drivetrainType == Vehicle.DrivetrainType.AWD)
                         return totalTorque * 0.25f;
                     break;
             }

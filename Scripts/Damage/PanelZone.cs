@@ -32,6 +32,28 @@ namespace RacingSim.Damage
             config.Type = DamageZoneType.PanelDeform;
         }
 
+        public void PartialRepair(float speed)
+        {
+            if (!meshVertices.IsCreated) return;
+            for (int i = 0; i < meshVertices.Length; i++)
+            {
+                var v = meshVertices[i];
+                v.Position = math.lerp(v.Position, v.OriginalPosition, speed);
+                meshVertices[i] = v;
+            }
+            if (controlPoints.IsCreated)
+            {
+                for (int i = 0; i < controlPoints.Length; i++)
+                {
+                    var cp = controlPoints[i];
+                    cp.Position = math.lerp(cp.Position, cp.OriginalPosition, speed);
+                    controlPoints[i] = cp;
+                }
+            }
+        }
+
+        public NativeArray<MeshVertex> MeshVertices => meshVertices;
+
         public override void Initialize(DamageZoneConfig cfg)
         {
             base.Initialize(cfg);
