@@ -214,6 +214,15 @@ namespace RacingSim.Physics
         [Header("Anti-Dive/Squat")]
         public float AntiDive;
         public float AntiSquat;
+
+        [Header("Extra State")]
+        public float verticalLoad;
+        public float groundHeight;
+        public float lateralForce;
+        public float longitudinalForce;
+
+        public float SteerAngle { get => SteeringAngle; set => SteeringAngle = value; }
+        public bool isGrounded { get => IsGrounded; set => IsGrounded = value; }
     }
 
     // ====================================================================

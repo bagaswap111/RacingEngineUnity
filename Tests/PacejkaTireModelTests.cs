@@ -200,11 +200,11 @@ namespace RacingSim.Tests
             float camber = 0f;
             
             // Act
-            var forcesPure = PacejkaTireModel.CalculateCombinedForces(slipAngle, slipRatioPure, fz, camber, defaultCoeffs);
-            var forcesCombined = PacejkaTireModel.CalculateCombinedForces(slipAngle, slipRatioCombined, fz, camber, defaultCoeffs);
+            var forcesPure = PacejkaTireModel.CalculateCombinedForces(slipAngle, slipRatioPure, fz, camber, 1f, defaultCoeffs);
+            var forcesCombined = PacejkaTireModel.CalculateCombinedForces(slipAngle, slipRatioCombined, fz, camber, 1f, defaultCoeffs);
             
             // Assert
-            Assert.Less(math.abs(forcesCombined.fy), math.abs(forcesPure.fy), 
+            Assert.Less(math.abs(forcesCombined.Fy), math.abs(forcesPure.Fy), 
                 "Gaya lateral harus berkurang saat ada slip ratio (friction circle)");
         }
         
@@ -270,14 +270,14 @@ namespace RacingSim.Tests
             // Act
             float fy = PacejkaTireModel.CalculateLateralForce(slipAngle, zeroLoad, camber, defaultCoeffs);
             float fx = PacejkaTireModel.CalculateLongitudinalForce(slipRatio, zeroLoad, defaultCoeffs);
-            var combined = PacejkaTireModel.CalculateCombinedForces(slipAngle, slipRatio, zeroLoad, camber, defaultCoeffs);
+            var combined = PacejkaTireModel.CalculateCombinedForces(slipAngle, slipRatio, zeroLoad, camber, 1f, defaultCoeffs);
             
             // Assert
             Assert.AreEqual(0f, fy);
             Assert.AreEqual(0f, fx);
-            Assert.AreEqual(0f, combined.fx);
-            Assert.AreEqual(0f, combined.fy);
-            Assert.AreEqual(0f, combined.mz);
+            Assert.AreEqual(0f, combined.Fx);
+            Assert.AreEqual(0f, combined.Fy);
+            Assert.AreEqual(0f, combined.Mz);
         }
         
         [Test]
@@ -291,12 +291,12 @@ namespace RacingSim.Tests
             float slipRatio = 0f;
             
             // Act
-            var mzPositive = PacejkaTireModel.CalculateCombinedForces(slipAnglePositive, slipRatio, fz, camber, defaultCoeffs);
-            var mzNegative = PacejkaTireModel.CalculateCombinedForces(slipAngleNegative, slipRatio, fz, camber, defaultCoeffs);
+            var mzPositive = PacejkaTireModel.CalculateCombinedForces(slipAnglePositive, slipRatio, fz, camber, 1f, defaultCoeffs);
+            var mzNegative = PacejkaTireModel.CalculateCombinedForces(slipAngleNegative, slipRatio, fz, camber, 1f, defaultCoeffs);
             
             // Assert
-            Assert.Less(mzPositive.mz, 0f, "Aligning torque harus negatif untuk positive slip angle (self-aligning)");
-            Assert.Greater(mzNegative.mz, 0f, "Aligning torque harus positif untuk negative slip angle");
+            Assert.Less(mzPositive.Mz, 0f, "Aligning torque harus negatif untuk positive slip angle (self-aligning)");
+            Assert.Greater(mzNegative.Mz, 0f, "Aligning torque harus positif untuk negative slip angle");
         }
     }
 }

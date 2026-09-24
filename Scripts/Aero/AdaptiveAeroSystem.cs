@@ -223,7 +223,7 @@ namespace RacingSim.Aero
 
             if (config.SlipstreamDetectionRadius <= 0f) return result;
 
-            Collider[] nearby = Physics.OverlapSphere(
+            Collider[] nearby = UnityEngine.Physics.OverlapSphere(
                 transform.position, config.SlipstreamDetectionRadius,
                 LayerMask.GetMask("Vehicle"));
 
@@ -234,13 +234,13 @@ namespace RacingSim.Aero
             {
                 if (nearby[i].transform == transform) continue;
 
-                float3 otherPos = nearby[i].transform.position;
-                float3 toOther = otherPos - transform.position;
+                float3 otherPos = (float3)nearby[i].transform.position;
+                float3 toOther = otherPos - (float3)transform.position;
                 float dist = math.length(toOther);
 
                 if (dist < 1f || dist > config.SlipstreamDetectionRadius) continue;
 
-                float3 otherForward = nearby[i].transform.forward;
+                float3 otherForward = (float3)nearby[i].transform.forward;
                 float alignment = math.dot(math.normalizesafe(toOther), otherForward);
 
                 if (alignment > 0.3f)

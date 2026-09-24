@@ -1,6 +1,8 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using RacingSim.Vehicle;
 
 namespace RacingSim.Drivetrain
 {
@@ -94,7 +96,7 @@ namespace RacingSim.Drivetrain
             if (curve.Length == 0) return 0f;
             if (rpm <= curve[0].RPM) return curve[0].Torque;
             if (rpm >= curve[curve.Length - 1].RPM) return curve[curve.Length - 1].Torque;
-            
+
             // Find interpolation interval
             for (int i = 0; i < curve.Length - 1; i++)
             {
@@ -104,8 +106,14 @@ namespace RacingSim.Drivetrain
                     return math.lerp(curve[i].Torque, curve[i + 1].Torque, t);
                 }
             }
-            
+
             return curve[curve.Length - 1].Torque;
+        }
+
+        private static float GetTorqueFromCurve(float rpm, AnimationCurve curve)
+        {
+            if (curve == null || curve.length == 0) return 0f;
+            return curve.Evaluate(rpm);
         }
 
         /// <summary>
@@ -543,6 +551,9 @@ namespace RacingSim.Drivetrain
         
         // Drivetrain losses
         public float DrivetrainLossTorque;
+
+        // Output to wheels
+        public float OutputTorque;
     }
 
     /// <summary>
@@ -649,6 +660,7 @@ namespace RacingSim.Drivetrain
             
             // 8. Calculate drivetrain losses
             state.DrivetrainLossTorque = math.abs(diffInputTorque) * (1f - config.gearboxEfficiency);
+            state.OutputTorque = gearboxOutputTorque;
         }
 
         /// <summary>
