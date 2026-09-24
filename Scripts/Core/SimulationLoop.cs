@@ -8,6 +8,22 @@ using System.Runtime.InteropServices;
 namespace RacingSim.Core
 {
     /// <summary>
+    /// [OBSOLETE] Needs rewrite to use new types:
+    /// - ChassisRigidBody instead of manual integration
+    /// - IVehicleInput instead of Input.GetAxis
+    /// - DamageConfig instead of VehicleConfig for damage
+    /// - AdvancedEngine/AdvancedTransmission instead of DrivetrainSystem
+    /// 
+    /// This file references many non-existent fields and will not compile.
+    /// Retained for integration reference only.
+    /// </summary>
+    [System.Obsolete("Needs rewrite to use ChassisRigidBody, IVehicleInput, DamageConfig")]
+    public class SimulationLoop_OLD : MonoBehaviour
+    {
+        // Intentionally empty - legacy code preserved in git history
+    }
+
+    /// <summary>
     /// Main simulation loop that integrates all physics systems
     /// Runs at fixed timestep (240Hz or higher) independent of render framerate
     /// 

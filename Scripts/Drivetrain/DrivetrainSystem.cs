@@ -7,6 +7,22 @@ using RacingSim.Vehicle;
 namespace RacingSim.Drivetrain
 {
     /// <summary>
+    /// [OBSOLETE] Use AdvancedEngine.cs and AdvancedTransmission.cs instead.
+    /// This file is retained for reference only. It references VehicleConfig
+    /// fields that no longer exist and will not compile.
+    /// 
+    /// Replacements:
+    /// - AdvancedEngine.cs: Turbo, engine braking, rev limiter, anti-lag
+    /// - AdvancedTransmission.cs: Dog ring engagement, shift sequence
+    /// - DrivelineOscillation.cs: 2-mass torsional model
+    /// </summary>
+    [System.Obsolete("Use AdvancedEngine, AdvancedTransmission, DrivelineOscillation instead")]
+    public static class DrivetrainSystem_OLD
+    {
+        // Intentionally empty - legacy code preserved in git history
+    }
+
+    /// <summary>
     /// Engine torque curve data point
     /// </summary>
     [System.Serializable]

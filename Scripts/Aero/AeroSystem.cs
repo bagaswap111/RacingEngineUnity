@@ -6,6 +6,20 @@ using RacingSim.Vehicle;
 namespace RacingSim.Aero
 {
     /// <summary>
+    /// [OBSOLETE] Use AdaptiveAeroSystem.cs instead.
+    /// This file is retained for reference only. It uses a different type
+    /// system (AeroMapPoint, AeroCoefficients) that is incompatible with
+    /// the current AeroDataStructures.cs.
+    /// 
+    /// Replacement: AdaptiveAeroSystem.cs with 5-tier GPU-adaptive aero.
+    /// </summary>
+    [System.Obsolete("Use AdaptiveAeroSystem instead")]
+    public static class AeroSystem_OLD
+    {
+        // Intentionally empty - legacy code preserved in git history
+    }
+
+    /// <summary>
     /// Aerodynamic coefficients lookup from aero map
     /// Stores Cd, Cl_front, Cl_rear, Cs for interpolation
     /// </summary>

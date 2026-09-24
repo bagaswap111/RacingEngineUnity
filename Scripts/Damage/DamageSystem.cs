@@ -115,18 +115,14 @@ namespace RacingSim.Damage
     }
 
     /// <summary>
-    /// Mechanical damage system for vehicle components
-    /// TODO: [ARCH-001] Wire to DamageConfig asset when created.
-    /// Current VehicleConfig lacks damage fields (engineRedlineRPM,
-    /// engineDamageOverrevRate, etc.). See architectural decision doc.
+    /// Mechanical damage system for vehicle components.
+    /// Uses VehicleConfig for vehicle params and DamageConfig for damage rates.
     /// </summary>
-    [BurstCompile]
     public static class MechanicalDamageSystem
     {
         /// <summary>
         /// Update engine damage based on various factors
         /// </summary>
-        [BurstCompile]
         public static float UpdateEngineDamage(
             float currentHealth,
             float rpm,
@@ -134,30 +130,31 @@ namespace RacingSim.Damage
             float oilTemp,
             float throttle,
             float dt,
-            in VehicleConfig config,
+            in VehicleConfig vehicleConfig,
+            in DamageConfig damageConfig,
             out bool isMisfiring)
         {
             float damage = 0f;
             isMisfiring = false;
 
             // Over-rev damage
-            if (rpm > config.engineRedlineRPM)
+            if (rpm > vehicleConfig.engineRedlineRPM)
             {
-                float overrevAmount = (rpm - config.engineRedlineRPM) / 1000f;
-                damage += config.engineDamageOverrevRate * overrevAmount * dt;
+                float overrevAmount = (rpm - vehicleConfig.engineRedlineRPM) / 1000f;
+                damage += damageConfig.EngineDamageOverrevRate * overrevAmount * dt;
             }
 
             // Overheat damage
-            if (engineTemp > config.engineTempOptimalMax)
+            if (engineTemp > damageConfig.EngineTempOptimalMax)
             {
-                float overheatAmount = (engineTemp - config.engineTempOptimalMax);
-                damage += config.engineDamageOverheatRate * (overheatAmount / 50f) * dt;
+                float overheatAmount = (engineTemp - damageConfig.EngineTempOptimalMax);
+                damage += damageConfig.EngineDamageOverheatRate * (overheatAmount / 50f) * dt;
             }
 
             // Oil pressure damage (low oil temp = poor lubrication)
-            if (oilTemp < config.optimalOilTempMin && rpm > config.engineIdleRPM * 2f)
+            if (oilTemp < damageConfig.OptimalOilTempMin && rpm > vehicleConfig.engineIdleRPM * 2f)
             {
-                damage += config.engineDamageColdRate * dt;
+                damage += damageConfig.EngineDamageColdRate * dt;
             }
 
             // Update health
@@ -176,33 +173,32 @@ namespace RacingSim.Damage
         /// <summary>
         /// Update suspension damage
         /// </summary>
-        [BurstCompile]
         public static float UpdateSuspensionDamage(
             float currentHealth,
             float verticalLoad,
             float suspensionTravel,
             float bumpStopCompression,
-            in VehicleConfig config)
+            in DamageConfig damageConfig)
         {
             float damage = 0f;
 
             // Overload damage
-            if (verticalLoad > config.suspensionMaxLoad)
+            if (verticalLoad > damageConfig.SuspensionMaxLoad)
             {
-                float overloadRatio = verticalLoad / config.suspensionMaxLoad;
-                damage += config.suspensionDamageOverloadRate * (overloadRatio - 1f);
+                float overloadRatio = verticalLoad / damageConfig.SuspensionMaxLoad;
+                damage += damageConfig.SuspensionDamageOverloadRate * (overloadRatio - 1f);
             }
 
             // Bottoming out damage
             if (bumpStopCompression > 0f)
             {
-                damage += config.suspensionDamageBottomingRate * bumpStopCompression;
+                damage += damageConfig.SuspensionDamageBottomingRate * bumpStopCompression;
             }
 
             // Impact damage from curbs/kerbs
-            if (suspensionTravel > config.suspensionTravelMax * 0.95f)
+            if (suspensionTravel > 0.08f * 0.95f)
             {
-                damage += config.suspensionDamageOvertravelRate;
+                damage += damageConfig.SuspensionDamageOvertravelRate;
             }
 
             currentHealth -= damage;
@@ -212,7 +208,6 @@ namespace RacingSim.Damage
         /// <summary>
         /// Update tire damage and wear
         /// </summary>
-        [BurstCompile]
         public static (float wear, bool punctured) UpdateTireDamage(
             float currentWear,
             float temperature,
@@ -221,44 +216,44 @@ namespace RacingSim.Damage
             float slipAngle,
             float distanceTraveled,
             bool isLocked,
-            in VehicleConfig config)
+            in DamageConfig damageConfig)
         {
             float wearRate = 0f;
             bool punctured = false;
 
             // Base wear from distance
-            wearRate += config.tireWearBaseRate * distanceTraveled;
+            wearRate += damageConfig.TireWearBaseRate * distanceTraveled;
 
             // Wear from slip (aggressive driving)
             float slipSeverity = math.abs(slipRatio) + math.abs(math.sin(slipAngle));
-            wearRate += config.tireWearSlipRate * slipSeverity;
+            wearRate += damageConfig.TireWearSlipRate * slipSeverity;
 
             // Wear from overheating
-            if (temperature > config.tireOverheatThreshold)
+            if (temperature > damageConfig.TireOverheatThreshold)
             {
-                float overheatFactor = (temperature - config.tireOverheatThreshold) / 50f;
+                float overheatFactor = (temperature - damageConfig.TireOverheatThreshold) / 50f;
                 wearRate *= (1f + overheatFactor * 2f);
             }
 
             // Flat spot from locked braking
             if (isLocked)
             {
-                wearRate += config.tireWearFlatSpotRate;
+                wearRate += damageConfig.TireWearFlatSpotRate;
             }
 
             // Check for puncture/blowout
-            if (verticalLoad > config.tireMaxLoad || temperature > config.tireBurstTemperature)
+            if (verticalLoad > damageConfig.TireMaxLoad || temperature > damageConfig.TireBurstTemperature)
             {
                 float punctureChance = 0f;
                 
-                if (verticalLoad > config.tireMaxLoad)
+                if (verticalLoad > damageConfig.TireMaxLoad)
                 {
-                    punctureChance += (verticalLoad / config.tireMaxLoad - 1f) * 0.1f;
+                    punctureChance += (verticalLoad / damageConfig.TireMaxLoad - 1f) * 0.1f;
                 }
                 
-                if (temperature > config.tireBurstTemperature)
+                if (temperature > damageConfig.TireBurstTemperature)
                 {
-                    punctureChance += (temperature - config.tireBurstTemperature) / 100f * 0.2f;
+                    punctureChance += (temperature - damageConfig.TireBurstTemperature) / 100f * 0.2f;
                 }
 
                 // Deterministic puncture check (in real game, use random)
@@ -275,41 +270,37 @@ namespace RacingSim.Damage
         }
 
         /// <summary>
-        /// Update aerodynamic damage
-        /// TODO: [ARCH-001] Remove string param (Burst incompatible),
-        /// use enum or int zone ID instead.
+        /// Update aerodynamic damage using zone ID (0=unknown, 1=front, 2=rear, 3=floor)
         /// </summary>
-        [BurstCompile]
         public static (float frontDamage, float rearDamage) UpdateAeroDamage(
             float frontDamage,
             float rearDamage,
             float3 collisionPoint,
             float collisionForce,
-            string collisionZone,
-            in VehicleConfig config)
+            int zoneId,
+            in DamageConfig damageConfig)
         {
-            if (collisionForce < config.aeroDamageThreshold)
+            if (collisionForce < damageConfig.AeroDamageThreshold)
             {
                 return (frontDamage, rearDamage);
             }
 
-            float damageAmount = collisionForce * config.aeroDamageCoefficient;
+            float damageAmount = collisionForce * damageConfig.AeroDamageCoefficient;
 
-            // Determine which aero elements are damaged
-            if (collisionZone.Contains("front") || collisionZone.Contains("wing_f"))
+            // Zone IDs: 1=front, 2=rear, 3=floor
+            if (zoneId == 1)
             {
                 frontDamage += damageAmount;
                 frontDamage = math.min(1f, frontDamage);
             }
 
-            if (collisionZone.Contains("rear") || collisionZone.Contains("wing_r"))
+            if (zoneId == 2)
             {
                 rearDamage += damageAmount;
                 rearDamage = math.min(1f, rearDamage);
             }
 
-            // Floor/underbody damage affects both
-            if (collisionZone.Contains("floor") || collisionZone.Contains("under"))
+            if (zoneId == 3)
             {
                 frontDamage += damageAmount * 0.5f;
                 rearDamage += damageAmount * 0.5f;
@@ -323,7 +314,6 @@ namespace RacingSim.Damage
         /// <summary>
         /// Get damage state from health value
         /// </summary>
-        [BurstCompile]
         public static DamageState GetDamageState(float health)
         {
             if (health > 0.9f) return DamageState.Perfect;
